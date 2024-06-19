@@ -17,9 +17,6 @@
     <Filter Include="Engine\ソース ファイル\Scene\Base">
       <UniqueIdentifier>{1a08160c-67a5-4ade-89ea-9cbdd3651383}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\ソース ファイル\Scene\Derived">
-      <UniqueIdentifier>{cfd998c3-5ec0-4724-9c7c-e318ad64d06e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\ソース ファイル\math">
       <UniqueIdentifier>{974e7865-0445-48fd-9269-50d174df26a8}</UniqueIdentifier>
     </Filter>
@@ -41,15 +38,6 @@
     </Filter>
     <Filter Include="Engine\ヘッダー ファイル\math">
       <UniqueIdentifier>{6275e0f9-9ce6-460f-8175-8fc7baac8146}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\ヘッダー ファイル\Scene">
-      <UniqueIdentifier>{066c9716-1853-4cc4-a2e6-a90bb494dbdb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\ヘッダー ファイル\Scene\Base">
-      <UniqueIdentifier>{0cbd666c-b6ea-4293-8a88-74400b29be18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\ヘッダー ファイル\Scene\Derived">
-      <UniqueIdentifier>{a09b19b2-6635-4516-b597-464dedc469c1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\ヘッダー ファイル\2D">
       <UniqueIdentifier>{226c8241-18e7-4978-88d4-c9da60f74b10}</UniqueIdentifier>
@@ -75,6 +63,18 @@
     </Filter>
     <Filter Include="Game\GameObject\Cameras">
       <UniqueIdentifier>{e812f903-8541-414e-8572-b612499d3d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー ファイル\Scene">
+      <UniqueIdentifier>{066c9716-1853-4cc4-a2e6-a90bb494dbdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\ヘッダー ファイル\Scene\Base">
+      <UniqueIdentifier>{0cbd666c-b6ea-4293-8a88-74400b29be18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameScenes">
+      <UniqueIdentifier>{e0952c45-35ca-4661-a6ac-6a7ab9dc9b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameScenes\GameScene">
+      <UniqueIdentifier>{72c1b528-847f-4121-95c1-05507946fa10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,9 +135,6 @@
     <ClCompile Include="Engine\externals\imgui\imgui_widgets.cpp">
       <Filter>Engine\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp">
-      <Filter>Engine\ソース ファイル\Scene\Derived</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Lazieal.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -147,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="Game\GameObjects\Player.cpp">
       <Filter>Game\GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp">
+      <Filter>Game\GameScenes\GameScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -222,9 +222,6 @@
     <ClInclude Include="Engine\externals\libs\math\Vector4.h">
       <Filter>Engine\ヘッダー ファイル\math</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Scenes\GameScenes\GameScene.h">
-      <Filter>Engine\ヘッダー ファイル\Scene\Derived</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Lazieal.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -233,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="Game\GameObject\Player.h">
       <Filter>Game\GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scenes\GameScenes\GameScene.h">
+      <Filter>Game\GameScenes\GameScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
