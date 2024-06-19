@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{56691ca0-825b-4a4c-9304-11139b837a1a}</ProjectGuid>
+    <RootNamespace>CG2</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>CG3</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Common;$(ProjectDir)Engine\externals;$(ProjectDir)Engine\externals\libs\math;$(ProjectDir)Game\Cameras;$(ProjectDir)Game\GameObjects;$(ProjectDir)Game\Resources;$(ProjectDir)Game\Scenes;$(ProjectDir)Game\Scenes\Base;$(ProjectDir)Game\Scenes\GameScenes;$(ProjectDir)Game\Scenes\Manager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
+copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Engine;$(ProjectDir)\Engine\2d;$(ProjectDir)\Engine\3d;$(ProjectDir)\Engine\Common;$(ProjectDir)\Engine\externals;$(ProjectDir)\Engine\externals\libs\math;$(ProjectDir)Game\GameObjects;$(ProjectDir)\Game\Cameras;$(ProjectDir)\Game\Resources;$(ProjectDir)\Game\Scenes\Base;$(ProjectDir)\Game\Scenes\GameScenes;$(ProjectDir)\Game\Scenes\Manager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
+copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\2d\Sprite.cpp" />
+    <ClCompile Include="Engine\3d\Model.cpp" />
+    <ClCompile Include="Engine\3d\Sphere.cpp" />
+    <ClCompile Include="Engine\3d\Triangle.cpp" />
+    <ClCompile Include="Engine\Common\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\Common\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Common\Log.cpp" />
+    <ClCompile Include="Engine\Common\PipelineStateObject.cpp" />
+    <ClCompile Include="Engine\Common\TextureManager.cpp" />
+    <ClCompile Include="Engine\Common\WinApp.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Engine\externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Engine\Lazieal.cpp" />
+    <ClCompile Include="Game\Cameras\CameraController.cpp" />
+    <ClCompile Include="Game\GameObjects\Player.cpp" />
+    <ClCompile Include="Game\Scenes\Base\BaseScene.cpp" />
+    <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp" />
+    <ClCompile Include="Game\Scenes\Manager\SceneManager.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\2d\Sprite.h" />
+    <ClInclude Include="Engine\3d\Model.h" />
+    <ClInclude Include="Engine\3d\Sphere.h" />
+    <ClInclude Include="Engine\3d\Triangle.h" />
+    <ClInclude Include="Engine\Common\DirectXCommon.h" />
+    <ClInclude Include="Engine\Common\ImGuiManager.h" />
+    <ClInclude Include="Engine\Common\Log.h" />
+    <ClInclude Include="Engine\Common\PipelineStateObject.h" />
+    <ClInclude Include="Engine\Common\TextureManager.h" />
+    <ClInclude Include="Engine\Common\WinApp.h" />
+    <ClInclude Include="Engine\externals\imgui\imconfig.h" />
+    <ClInclude Include="Engine\externals\imgui\imgui.h" />
+    <ClInclude Include="Engine\externals\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="Engine\externals\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="Engine\externals\imgui\imgui_internal.h" />
+    <ClInclude Include="Engine\externals\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Engine\externals\imgui\imstb_textedit.h" />
+    <ClInclude Include="Engine\externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="Engine\externals\libs\math\Matrix4x4.h" />
+    <ClInclude Include="Engine\externals\libs\math\Vector2.h" />
+    <ClInclude Include="Engine\externals\libs\math\Vector3.h" />
+    <ClInclude Include="Engine\externals\libs\math\Vector4.h" />
+    <ClInclude Include="Engine\Lazieal.h" />
+    <ClInclude Include="Game\Cameras\CameraController.h" />
+    <ClInclude Include="Game\GameObject\Player.h" />
+    <ClInclude Include="Game\Scenes\Base\BaseScene.h" />
+    <ClInclude Include="Game\Scenes\GameScenes\GameScene.h" />
+    <ClInclude Include="Game\Scenes\Manager\SceneManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Engine\externals\imgui\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Shaders\object3d.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Engine\Shaders\Object3d.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Engine\Shaders\Object3d.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Engine\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
