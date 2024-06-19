@@ -62,8 +62,8 @@ struct MaterialData
 {
 	std::string textureFilePath;
 	Vector4 color;
+	bool enbleLighting;
 };
-
 
 
 struct ModelData
