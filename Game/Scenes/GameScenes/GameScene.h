@@ -46,7 +46,7 @@ private:
 	/*ImGui*/
 	cImGuiManager* imgui_ = nullptr;
 
-	cPipelineStateObject::Blendmode blendMode_ = cPipelineStateObject::kBlendModeNormal;
+	cPipelineStateObject::Blendmode blendMode_ = cPipelineStateObject::kBlendModeSubtract;
 
 	/*カメラ*/
 	cCameraController* mainCamera_{};

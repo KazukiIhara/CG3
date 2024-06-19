@@ -40,6 +40,7 @@ ID3D12PipelineState* cPipelineStateObject::GetPipelineState(Blendmode blendMode)
 		return GetInstance()->graphicsPipelineState_[kBlendModeScreen].Get();
 		break;
 	default:
+		return GetInstance()->graphicsPipelineState_[kBlendModeNone].Get();
 		break;
 	}
 }
@@ -170,7 +171,7 @@ D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting(uint32_t blendModeNum)
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
 		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
 		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
