@@ -46,7 +46,8 @@ private:
 	/*ImGui*/
 	cImGuiManager* imgui_ = nullptr;
 
-	cPipelineStateObject::Blendmode blendMode_ = cPipelineStateObject::kBlendModeSubtract;
+	// BlendMode
+	cPipelineStateObject::Blendmode blendMode_ = cPipelineStateObject::kBlendModeNone;
 
 	/*カメラ*/
 	cCameraController* mainCamera_{};
@@ -68,5 +69,8 @@ private:
 	cModel* model_{};
 	/*モデルデータ*/
 	ModelData modelData_{};
+
+	// BlendMode
+	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen"};
 };
 

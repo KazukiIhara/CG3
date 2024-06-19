@@ -74,6 +74,31 @@ void cGameScene::Update()
 		ImGui::DragFloat3("Translate", &modelTransform_.translate.x, 0.01f);
 		ImGui::ColorEdit4("Color", &modelData_.material.color.x);
 
+		static int currentBlendModeImGui = 0;
+		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
+
+		switch (currentBlendModeImGui)
+		{
+		case 0:
+			blendMode_ = cPipelineStateObject::kBlendModeNone;
+			break;
+		case 1:
+			blendMode_ = cPipelineStateObject::kBlendModeNormal;
+			break;
+		case 2:
+			blendMode_ = cPipelineStateObject::kBlendModeAdd;
+			break;
+		case 3:
+			blendMode_ = cPipelineStateObject::kBlendModeSubtract;
+			break;
+		case 4:
+			blendMode_ = cPipelineStateObject::kBlendModeMultiply;
+			break;
+		case 5:
+			blendMode_ = cPipelineStateObject::kBlendModeScreen;
+			break;
+		}
+
 		ImGui::DragFloat2("uvTranslate", &modelUVTransform_.translate.x, 0.01f);
 		ImGui::DragFloat2("uvScale", &modelUVTransform_.scale.x, 0.01f);
 		ImGui::SliderAngle("uvTranslate", &modelUVTransform_.rotate.z);
