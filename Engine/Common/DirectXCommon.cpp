@@ -99,7 +99,6 @@ void cDirectXCommon::PreDraw(float clearColor[])
 	cDirectXCommon::GetCommandList()->RSSetScissorRects(1, &scissorRect);//Scirssorを設定
 	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
 	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetRootSignature());
-	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPipelineState());//PSOを設定
 }
 
 void cDirectXCommon::PostDraw()

@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "TextureManager.h"
 
+
 void cModel::Initialize(ModelData* modelData, sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
 {
 	/*NullCheck*/
@@ -83,8 +84,9 @@ void cModel::Update()
 
 }
 
-void cModel::Draw(uint32_t textureHandle)
+void cModel::Draw(uint32_t textureHandle,cPipelineStateObject::Blendmode blendMode)
 {
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPipelineState(blendMode));//PSOを設定
 	//VBVを設定
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い

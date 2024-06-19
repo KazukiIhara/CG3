@@ -1,16 +1,16 @@
 #pragma once
 #include <memory>
+#include "PipelineStateObject.h"
 #include "DirectXCommon.h"
 #include "Lazieal.h"
 #include "externals/DirectXTex/DirectXTex.h"
-
 
 class cSprite
 {
 public:
 	void Initialize(sTransform* transform, Material* material, sTransform* uvTransform);
 	void Update();
-	void Draw(uint32_t textureHandle);
+	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 private:/*メンバ関数*/
 
 #pragma region Vertex

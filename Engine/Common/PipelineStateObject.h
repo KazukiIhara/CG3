@@ -8,6 +8,17 @@ class cPipelineStateObject
 {
 public:
 
+	// ブレンドモード
+	enum Blendmode
+	{
+		kBlendModeNone,
+		kBlendModeNormal,
+		kBlendModeAdd,
+		kBlendModeSubtract,
+		kBlendModeMultiply,
+		kBlendModeScreen,
+	};
+
 	static cPipelineStateObject* GetInstance();
 
 	void Initialize();
@@ -16,10 +27,9 @@ public:
 	{
 		return GetInstance()->rootSignature_.Get();
 	}
-	static ID3D12PipelineState* GetPipelineState()
-	{
-		return GetInstance()->graphicsPipelineState_.Get();
-	}
+
+	static ID3D12PipelineState* GetPipelineState(Blendmode blendMode);
+
 
 private:
 	cPipelineStateObject() = default;
@@ -34,7 +44,7 @@ private:
 	D3D12_INPUT_LAYOUT_DESC InputLayoutSetting();
 
 	/*BlendStateの設定*/
-	D3D12_BLEND_DESC BlendStateSetting();
+	D3D12_BLEND_DESC BlendStateSetting(uint32_t blendModeNum);
 
 	/*RasterizerStateの設定*/
 	D3D12_RASTERIZER_DESC RasterizerStateSetting();
@@ -61,6 +71,9 @@ private:
 
 private:
 
+	// ブレンドモードの数
+	static const uint32_t kBlendModeNum = 6;
+
 	/*ルートシグネイチャ*/
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
@@ -70,6 +83,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob_;
 
 	/*グラフィックスパイプラインステイトオブジェクト a.k.a PSO (本人)*/
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState_[kBlendModeNum];
 
 };
