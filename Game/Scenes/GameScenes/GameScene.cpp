@@ -48,10 +48,9 @@ void cGameScene::Initialize()
 	light.intensity = 1.0f;
 
 	/*Modelの作成*/
-	particleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	model_ = new cParticle();
-	model_->Initialize(&particleTransform_, viewProjectionMatrix_, &light, &particleUVTransform_);
+	model_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
 }
