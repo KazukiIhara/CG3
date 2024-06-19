@@ -19,7 +19,7 @@ void cParticle::Initialize(sTransform* transform, Matrix4x4* viewProjection, Dir
 	modelData_.vertices.push_back({ .position = {1.0f,-1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back({ .position = {-1.0f,1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back({ .position = {-1.0f,-1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	
+
 	modelData_.material.color = { 1.0f,1.0f,1.0f,1.0f };
 
 	modelData_.material.enbleLighting = false;
@@ -110,7 +110,7 @@ void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode ble
 	/*DirectionalLight*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount_, 0, 0);
 }
 
 void cParticle::CreateVertexResource()

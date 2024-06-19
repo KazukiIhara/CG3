@@ -110,4 +110,5 @@ private:/*メンバ変数*/
 	DirectionalLight* directionalLight_;
 #pragma endregion
 
+	const uint32_t instanceCount_ = 10;
 };
