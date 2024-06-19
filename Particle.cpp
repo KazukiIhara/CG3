@@ -173,7 +173,7 @@ void cParticle::MapMaterialData()
 void cParticle::CreateWVPResource()
 {
 	// WVP用のリソースを作る
-	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix));
+	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix) * instanceCount_);
 }
 
 void cParticle::MapWVPData()
@@ -183,8 +183,11 @@ void cParticle::MapWVPData()
 	/*書き込むためのアドレスを取得*/
 	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
 	/*単位行列を書き込んでおく*/
-	transformationData_->WVP = MakeIdentity4x4();
-	transformationData_->World = MakeIdentity4x4();
+	for (uint32_t index = 0; index < instanceCount_; ++index)
+	{
+		transformationData_[index].WVP = MakeIdentity4x4();
+		transformationData_[index].World = MakeIdentity4x4();
+	}
 }
 
 void cParticle::CreateDirectionalLightResource()
