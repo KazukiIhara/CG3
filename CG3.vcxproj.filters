@@ -250,12 +250,21 @@
     <None Include="Engine\Shaders\object3d.hlsli">
       <Filter>Engine\シェーダーファイル</Filter>
     </None>
+    <None Include="Engine\Shaders\Particle.hlsli">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Engine\Shaders\Object3d.PS.hlsl">
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="Engine\Shaders\Object3d.VS.hlsl">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shaders\Particle.PS.hlsl">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shaders\Particle.VS.hlsl">
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>

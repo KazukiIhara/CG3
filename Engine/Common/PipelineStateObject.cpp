@@ -253,12 +253,12 @@ void cPipelineStateObject::CompileShaders()
 
 	//Shaderをコンパイルする
 	vertexShaderBlob_ = nullptr;
-	vertexShaderBlob_ = CompileShader(L"Engine/Shaders/Object3D.VS.hlsl",
+	vertexShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.VS.hlsl",
 		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob_ != nullptr);
 
 	pixelShaderBlob_ = nullptr;
-	pixelShaderBlob_ = CompileShader(L"Engine/Shaders/OBject3D.PS.hlsl",
+	pixelShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.PS.hlsl",
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob_ != nullptr);
 
