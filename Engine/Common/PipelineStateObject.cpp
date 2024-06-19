@@ -11,12 +11,37 @@ void cPipelineStateObject::Initialize()
 {
 	/*RootSignatureの作成*/
 	CreateRootSignature();
-	/*BlendStateの設定*/
-	BlendStateSetting();
 	/*Shaderをコンパイル*/
 	CompileShaders();
 	/*PSOの作成*/
 	CreatePipelineStateObject();
+}
+
+ID3D12PipelineState* cPipelineStateObject::GetPipelineState(Blendmode blendMode)
+{
+	switch (blendMode)
+	{
+	case cPipelineStateObject::kBlendModeNone:
+		return GetInstance()->graphicsPipelineState_[kBlendModeNone].Get();
+		break;
+	case cPipelineStateObject::kBlendModeNormal:
+		return GetInstance()->graphicsPipelineState_[kBlendModeNormal].Get();
+		break;
+	case cPipelineStateObject::kBlendModeAdd:
+		return GetInstance()->graphicsPipelineState_[kBlendModeAdd].Get();
+		break;
+	case cPipelineStateObject::kBlendModeSubtract:
+		return GetInstance()->graphicsPipelineState_[kBlendModeSubtract].Get();
+		break;
+	case cPipelineStateObject::kBlendModeMultiply:
+		return GetInstance()->graphicsPipelineState_[kBlendModeMultiply].Get();
+		break;
+	case cPipelineStateObject::kBlendModeScreen:
+		return GetInstance()->graphicsPipelineState_[kBlendModeScreen].Get();
+		break;
+	default:
+		break;
+	}
 }
 
 void cPipelineStateObject::CreateRootSignature()
@@ -110,19 +135,74 @@ D3D12_INPUT_LAYOUT_DESC cPipelineStateObject::InputLayoutSetting()
 	return inputLayoutDesc;
 }
 
-D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting()
+D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting(uint32_t blendModeNum)
 {
 	D3D12_BLEND_DESC blendDesc{};
+	switch (blendModeNum)
+	{
+	case 0:// kBlendModeNone
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		break;
+	case 1:// kBlendModeNormal
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+
+	case 2:// kBlendModeAdd
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+	case 3:// kBlendModeSubtract
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+
+	case 4:// kBlendModeMultiply
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+
+	case 5:// kBlendModeScreen
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		break;
+	}
 	// 全ての色要素を書き込む
 	// ブレンドモードNone D3D12_COLOR_WRITE_ENABLE_ALLだけ
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
 	return blendDesc;
 }
@@ -198,7 +278,6 @@ void cPipelineStateObject::CreatePipelineStateObject()
 	vertexShaderBlob_->GetBufferSize() };
 	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
 	pixelShaderBlob_->GetBufferSize() };
-	graphicsPipelineStateDesc.BlendState = BlendStateSetting();
 	graphicsPipelineStateDesc.RasterizerState = RasterizerStateSetting();
 	//書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
@@ -214,10 +293,14 @@ void cPipelineStateObject::CreatePipelineStateObject()
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	//実際に生成
-	graphicsPipelineState_ = nullptr;
-	hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(&graphicsPipelineState_));
-	assert(SUCCEEDED(hr));
+	for (uint32_t i = 0; i < kBlendModeNum; i++)
+	{
+		graphicsPipelineStateDesc.BlendState = BlendStateSetting(i);
+		graphicsPipelineState_[i] = nullptr;
+		hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+			IID_PPV_ARGS(&graphicsPipelineState_[i]));
+		assert(SUCCEEDED(hr));
+	}
 
 }
 

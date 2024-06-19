@@ -1,5 +1,4 @@
 #include "Sprite.h"
-#include "PipelineStateObject.h"
 #include "externals/DirectXTex/d3dx12.h"
 #include "TextureManager.h"
 
@@ -69,8 +68,9 @@ void cSprite::Update()
 	materialData_->uvTransform = uvTransformMatrix;
 }
 
-void cSprite::Draw(uint32_t textureHandle)
+void cSprite::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
 {
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPipelineState(blendMode));//PSOを設定
 	/*VBVの設定*/
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	/*IBVの設定*/

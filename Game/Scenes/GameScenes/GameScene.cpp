@@ -1,7 +1,7 @@
 #include "GameScene.h"
 
 #include "DirectXCommon.h"
-#include "PipelineStateObject.h"
+
 #include "CameraController.h"
 #include "TextureManager.h"
 
@@ -14,12 +14,8 @@
 
 cGameScene::cGameScene()
 {
-	/*WINAPI*/
-	win = cWinApp::GetInstance();
 	/*DirectX*/
 	dxCommon = cDirectXCommon::GetInstance();
-	/*PSO*/
-	pso = cPipelineStateObject::GetInstance();
 	/*ImGui*/
 	imgui_ = cImGuiManager::GetInstance();
 }
@@ -131,7 +127,7 @@ void cGameScene::Draw()
 	/// 描画処理ここから
 	/// 
 
-	model_->Draw(modelTextureHandle_);
+	model_->Draw(modelTextureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

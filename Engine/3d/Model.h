@@ -2,6 +2,7 @@
 #include "Lazieal.h"
 #include <memory>
 #include "DirectXCommon.h"
+#include "PipelineStateObject.h"
 
 class cModel
 {
@@ -9,10 +10,10 @@ public:
 
 	void Initialize(ModelData* modelData, sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
 	void Update();
-	void Draw(uint32_t textureHandle);
+	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
 	/*Objファイルからデータを読み取る関数*/
-	ModelData LoadObjFile(const std::string& filename,const std::string& directoryPath ="Game/Resources");
+	ModelData LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
 
 private:
 #pragma region Vertex

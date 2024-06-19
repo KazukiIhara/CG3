@@ -2,12 +2,10 @@
 #include "BaseScene.h"
 #include <memory>
 #include "Lazieal.h"
+#include "PipelineStateObject.h"
 
 class cDirectXCommon;
-class cWinApp;
-class cPipelineStateObject;
 class cImGuiManager;
-class cTextureManager;
 class cCameraController;
 
 class cModel;
@@ -43,14 +41,12 @@ private:
 
 	const int kThisSceneNo_ = Game;
 
-	/*WinAPI*/
-	cWinApp* win = nullptr;
 	/*DirectX*/
 	cDirectXCommon* dxCommon = nullptr;
-	/*PSO*/
-	cPipelineStateObject* pso = nullptr;
 	/*ImGui*/
 	cImGuiManager* imgui_ = nullptr;
+
+	cPipelineStateObject::Blendmode blendMode_ = cPipelineStateObject::kBlendModeNormal;
 
 	/*カメラ*/
 	cCameraController* mainCamera_{};
