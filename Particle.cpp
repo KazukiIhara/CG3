@@ -4,14 +4,12 @@
 #include "TextureManager.h"
 
 
-void cParticle::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
+void cParticle::Initialize(Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
 {
 	/*NullCheck*/
-	assert(transform);
 	assert(uvTransform);
 	assert(viewProjection);
 	assert(light);
-
 
 	modelData_.vertices.push_back({ .position = {1.0f,1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back({ .position = {-1.0f,1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
@@ -19,12 +17,18 @@ void cParticle::Initialize(sTransform* transform, Matrix4x4* viewProjection, Dir
 	modelData_.vertices.push_back({ .position = {1.0f,-1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back({ .position = {-1.0f,1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back({ .position = {-1.0f,-1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	
+
 	modelData_.material.color = { 1.0f,1.0f,1.0f,1.0f };
 
 	modelData_.material.enbleLighting = false;
 
-	transform_ = transform;
+	for (uint32_t index = 0; index < instanceCount_; ++index)
+	{
+		transform_[index].scale = { 1.0f,1.0f,1.0f };
+		transform_[index].rotate = { 0.0f,0.0f,0.0f };
+		transform_[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+	}
+
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
 	directionalLight_ = light;
@@ -67,17 +71,21 @@ void cParticle::Initialize(sTransform* transform, Matrix4x4* viewProjection, Dir
 	/*データを書き込む*/
 	MapDirectionalLightData();
 #pragma endregion
-
+	CreateSRV();
 }
 
 void cParticle::Update()
 {
 	/*WVPマトリックスを作る*/
-	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_->scale, transform_->rotate, transform_->translate);
-	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-	transformationData_->WVP = worldViewProjectionMatrix;
-	transformationData_->World = worldMatrix;
+	for (uint32_t index = 0; index < instanceCount_; ++index)
+	{
+		Matrix4x4 worldMatrix = MakeAffineMatrix(transform_[index].scale, transform_[index].rotate, transform_[index].translate);
+		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
+
+		transformationData_[index].WVP = worldViewProjectionMatrix;
+		transformationData_[index].World = worldMatrix;
+	}
 
 	// 色を書き込む
 	materialData_->color = modelData_.material.color;
@@ -103,14 +111,14 @@ void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode ble
 	cDirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	/*マテリアルCBufferの場所を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	/*wvp用のCBufferの場所を設定*/
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
+	// StructuredBufferのSRVを設定する
+	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU);
 	/*SRVのDescriptorTableの先頭を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[textureHandle].gpuDescHandleSRV);
 	/*DirectionalLight*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	cDirectXCommon::GetCommandList()->DrawInstanced(6, instanceCount_, 0, 0);
 }
 
 void cParticle::CreateVertexResource()
@@ -173,7 +181,7 @@ void cParticle::MapMaterialData()
 void cParticle::CreateWVPResource()
 {
 	// WVP用のリソースを作る
-	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix));
+	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix) * instanceCount_);
 }
 
 void cParticle::MapWVPData()
@@ -183,8 +191,11 @@ void cParticle::MapWVPData()
 	/*書き込むためのアドレスを取得*/
 	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
 	/*単位行列を書き込んでおく*/
-	transformationData_->WVP = MakeIdentity4x4();
-	transformationData_->World = MakeIdentity4x4();
+	for (uint32_t index = 0; index < instanceCount_; ++index)
+	{
+		transformationData_[index].WVP = MakeIdentity4x4();
+		transformationData_[index].World = MakeIdentity4x4();
+	}
 }
 
 void cParticle::CreateDirectionalLightResource()
@@ -203,6 +214,21 @@ void cParticle::MapDirectionalLightData()
 	directionalLightData_->color = directionalLight_->color;
 	directionalLightData_->direction = directionalLight_->direction;
 	directionalLightData_->intensity = directionalLight_->intensity;
+}
+
+void cParticle::CreateSRV()
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
+	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	instancingSrvDesc.Buffer.FirstElement = 0;
+	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	instancingSrvDesc.Buffer.NumElements = instanceCount_;
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = cDirectXCommon::GetCPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 3);
+	instancingSrvHandleGPU = cDirectXCommon::GetGPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 3);
+	cDirectXCommon::GetDevice()->CreateShaderResourceView(transformationResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes)

@@ -35,7 +35,7 @@ void cGameScene::Initialize()
 	// テクスチャマネージャー初期化
 	cTextureManager::Initialize();
 	/*カメラ作成*/
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.1f,1.0f,0.0f},{0.0f,4.0f,10.0f} };
 	mainCamera_ = new cCameraController();
 	mainCamera_->Initialize(&cameraTransform_);
 
@@ -48,10 +48,9 @@ void cGameScene::Initialize()
 	light.intensity = 1.0f;
 
 	/*Modelの作成*/
-	particleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	model_ = new cParticle();
-	model_->Initialize(&particleTransform_, viewProjectionMatrix_, &light, &particleUVTransform_);
+	model_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
 }
