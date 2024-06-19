@@ -68,6 +68,9 @@ void cModel::Update()
 	transformationData_->WVP = worldViewProjectionMatrix;
 	transformationData_->World = worldMatrix;
 
+	// 色を書き込む
+	materialData_->color = modelData_->material.color;
+
 	/*uvTranform用のMatrixを作る*/
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
@@ -128,22 +131,19 @@ ModelData cModel::LoadObjFile(const std::string& filename, const std::string& di
 			position.w = 1.0f;
 			position.x *= -1.0f;
 			positions.push_back(position);
-		}
-		else if (identifier == "vt")
+		} else if (identifier == "vt")
 		{
 			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
-		}
-		else if (identifier == "vn")
+		} else if (identifier == "vn")
 		{
 			Vector3 normal;
 			s >> normal.x >> normal.y >> normal.z;
 			normal.x *= -1.0f;
 			normals.push_back(normal);
-		}
-		else if (identifier == "f")	//三角形を作る
+		} else if (identifier == "f")	//三角形を作る
 		{
 			sVertexData triangle[3]{};
 			//面は三角形限定。その他は未対応
@@ -171,8 +171,7 @@ ModelData cModel::LoadObjFile(const std::string& filename, const std::string& di
 			modelData.vertices.push_back(triangle[2]);
 			modelData.vertices.push_back(triangle[1]);
 			modelData.vertices.push_back(triangle[0]);
-		}
-		else if (identifier == "mtllib")
+		} else if (identifier == "mtllib")
 		{
 			/*MaterialTemplateLibraryファイルの名前を取得する*/
 			std::string materialFilename;	//mtlファイルの名前
@@ -296,8 +295,7 @@ MaterialData cModel::LoadMaterialTemplateFile(const std::string& directoryPath, 
 			s >> textureFilename;
 			//連結してファイルパスにする
 			materialData.textureFilePath = directoryPath + "/" + textureFilename;
-		}
-		else if (identifier == "Kd")
+		} else if (identifier == "Kd")
 		{
 			Vector4 color;
 			s >> color.x >> color.y >> color.z;

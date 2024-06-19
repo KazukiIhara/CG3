@@ -61,17 +61,6 @@ private:
 	/*光源*/
 	DirectionalLight light{};
 
-	/*テクスチャーハンドル*/
-	uint32_t textureHandle_ = 0u;
-
-	/*スプライト用変数*/
-	/*スプライトのトランスフォーム*/
-	sTransform spriteTransform_;
-	/*スプライトのuvトランスフォーム*/
-	sTransform spriteUVTransform_;
-	/*スプライト*/
-	cSprite* sprite_{};
-
 	/*モデル用変数*/
 	/*モデル用のTexture*/
 	uint32_t modelTextureHandle_;
@@ -79,8 +68,6 @@ private:
 	sTransform modelTransform_;
 	/*モデルのトランスフォーム*/
 	sTransform modelUVTransform_;
-	/*モデルのマテリアルデータ*/
-	Material material_{};
 	/*モデル(本人)*/
 	cModel* model_{};
 	/*モデルデータ*/

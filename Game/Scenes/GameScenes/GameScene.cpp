@@ -30,7 +30,6 @@ cGameScene::~cGameScene()
 	{
 		/*メインカメラ開放*/
 		delete mainCamera_;
-		delete sprite_;
 		delete model_;
 	}
 }
@@ -46,29 +45,19 @@ void cGameScene::Initialize()
 	/*ゲームシーンのビューマトリックスにポインタを渡す*/
 	viewProjectionMatrix_ = mainCamera_->GetViewProjectionMatrix();
 
-	/*マテリアルの入力*/
-	material_.color = { 1.0f,1.0f,1.0f,1.0f };
-	material_.enbleLighting = true;
-
 	/*ライト*/
 	light.color = { 1.0f,1.0f,1.0f,1.0f };
 	light.direction = { 0.0f,-1.0f,0.0f };
 	light.intensity = 1.0f;
 
 	/*Modelの作成*/
-	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
 	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	model_ = new cModel();
-	modelData_ = model_->LoadObjFile("teapot.obj");
+	modelData_ = model_->LoadObjFile("plane.obj");
 	model_->Initialize(&modelData_, &modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
 	modelTextureHandle_ = cTextureManager::Load(modelData_.material.textureFilePath);
 
-	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
-	/*Spriteのトランスフォーム*/
-	spriteTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	spriteUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	sprite_ = new cSprite();
-	sprite_->Initialize(&spriteTransform_, &material_, &spriteUVTransform_);
 }
 
 void cGameScene::Update()
@@ -82,25 +71,16 @@ void cGameScene::Update()
 #pragma region ImGui
 	ImGui::Begin("Config");
 
-	if (ImGui::TreeNodeEx("Sphere", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::DragFloat3("Scale", &modelTransform_.scale.x, 0.002f);
 		ImGui::DragFloat3("Rotate", &modelTransform_.rotate.x, 0.002f);
 		ImGui::DragFloat3("Translate", &modelTransform_.translate.x, 0.01f);
+		ImGui::ColorEdit4("Color", &modelData_.material.color.x);
 
 		ImGui::DragFloat2("uvTranslate", &modelUVTransform_.translate.x, 0.01f);
 		ImGui::DragFloat2("uvScale", &modelUVTransform_.scale.x, 0.01f);
 		ImGui::SliderAngle("uvTranslate", &modelUVTransform_.rotate.z);
-
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::DragFloat2("Translate", &spriteTransform_.translate.x);
-		ImGui::DragFloat2("uvTranslate", &spriteUVTransform_.translate.x, 0.01f);
-		ImGui::DragFloat2("uvScale", &spriteUVTransform_.scale.x, 0.01f);
-		ImGui::SliderAngle("uvTranslate", &spriteUVTransform_.rotate.z);
 
 		ImGui::TreePop();
 	}
@@ -135,8 +115,6 @@ void cGameScene::Update()
 
 	model_->Update();
 
-	sprite_->Update();
-
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
 	imgui_->EndFrame();
 }
@@ -154,8 +132,6 @@ void cGameScene::Draw()
 	/// 
 
 	model_->Draw(modelTextureHandle_);
-
-	sprite_->Draw(textureHandle_);
 
 	///
 	/// 描画処理ここまで
