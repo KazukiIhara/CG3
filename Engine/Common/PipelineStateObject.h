@@ -83,6 +83,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob_;
 
 	/*グラフィックスパイプラインステイトオブジェクト a.k.a PSO (本人)*/
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState_[kBlendModeNum];
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState_ [kBlendModeNum];
 
 };

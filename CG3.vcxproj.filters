@@ -148,6 +148,9 @@
     <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp">
       <Filter>Game\GameScenes\GameScene</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\2d\Sprite.h">
@@ -233,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="Game\Scenes\GameScenes\GameScene.h">
       <Filter>Game\GameScenes\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Engine\ヘッダー ファイル\3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
