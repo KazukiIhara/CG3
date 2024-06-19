@@ -12,6 +12,7 @@ class cModel;
 class cTriangle;
 class cSprite;
 class cSphere;
+class cParticle;
 
 class cGameScene :public cBaseScene
 {
@@ -60,17 +61,15 @@ private:
 
 	/*モデル用変数*/
 	/*モデル用のTexture*/
-	uint32_t modelTextureHandle_;
+	uint32_t particleTextureHandle_;
 	/*モデルのトランスフォーム*/
-	sTransform modelTransform_;
+	sTransform particleTransform_;
 	/*モデルのトランスフォーム*/
-	sTransform modelUVTransform_;
+	sTransform particleUVTransform_;
 	/*モデル(本人)*/
-	cModel* model_{};
-	/*モデルデータ*/
-	ModelData modelData_{};
+	cParticle* model_{};
 
 	// BlendMode
-	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen"};
+	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };
 };
 

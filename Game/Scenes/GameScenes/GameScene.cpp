@@ -9,6 +9,7 @@
 #include "Triangle.h"
 #include "Sphere.h"
 #include "Sprite.h"
+#include "Particle.h"
 #include "ImGuiManager.h"
 
 
@@ -47,12 +48,11 @@ void cGameScene::Initialize()
 	light.intensity = 1.0f;
 
 	/*Modelの作成*/
-	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
-	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	model_ = new cModel();
-	modelData_ = model_->LoadObjFile("fence.obj");
-	model_->Initialize(&modelData_, &modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
-	modelTextureHandle_ = cTextureManager::Load(modelData_.material.textureFilePath);
+	particleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
+	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	model_ = new cParticle();
+	model_->Initialize(&particleTransform_, viewProjectionMatrix_, &light, &particleUVTransform_);
+	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
 }
 
@@ -69,10 +69,9 @@ void cGameScene::Update()
 
 	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat3("Scale", &modelTransform_.scale.x, 0.002f);
-		ImGui::DragFloat3("Rotate", &modelTransform_.rotate.x, 0.002f);
-		ImGui::DragFloat3("Translate", &modelTransform_.translate.x, 0.01f);
-		ImGui::ColorEdit4("Color", &modelData_.material.color.x);
+		ImGui::DragFloat3("Scale", &particleTransform_.scale.x, 0.002f);
+		ImGui::DragFloat3("Rotate", &particleTransform_.rotate.x, 0.002f);
+		ImGui::DragFloat3("Translate", &particleTransform_.translate.x, 0.01f);
 
 		static int currentBlendModeImGui = 0;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
@@ -99,9 +98,9 @@ void cGameScene::Update()
 			break;
 		}
 
-		ImGui::DragFloat2("uvTranslate", &modelUVTransform_.translate.x, 0.01f);
-		ImGui::DragFloat2("uvScale", &modelUVTransform_.scale.x, 0.01f);
-		ImGui::SliderAngle("uvTranslate", &modelUVTransform_.rotate.z);
+		ImGui::DragFloat2("uvTranslate", &particleUVTransform_.translate.x, 0.01f);
+		ImGui::DragFloat2("uvScale", &particleUVTransform_.scale.x, 0.01f);
+		ImGui::SliderAngle("uvTranslate", &particleUVTransform_.rotate.z);
 
 		ImGui::TreePop();
 	}
@@ -152,7 +151,7 @@ void cGameScene::Draw()
 	/// 描画処理ここから
 	/// 
 
-	model_->Draw(modelTextureHandle_, blendMode_);
+	model_->Draw(particleTextureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで
