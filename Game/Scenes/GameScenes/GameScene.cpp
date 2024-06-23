@@ -28,7 +28,6 @@ cGameScene::~cGameScene()
 		/*メインカメラ開放*/
 		delete mainCamera_;
 		delete particle_;
-		delete model_;
 	}
 }
 void cGameScene::Initialize()
@@ -54,12 +53,6 @@ void cGameScene::Initialize()
 	particle_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
-	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
-	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	model_ = new cModel();
-	modelData_ = model_->LoadObjFile("teapot.obj");
-	model_->Initialize(&modelData_, &modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
-	modelTextureHandle_ = cTextureManager::Load(modelData_.material.textureFilePath);
 }
 
 void cGameScene::Update()
@@ -136,7 +129,6 @@ void cGameScene::Update()
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
-	model_->Update();
 	particle_->Update();
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
@@ -155,7 +147,6 @@ void cGameScene::Draw()
 	/// 描画処理ここから
 	/// 
 
-	model_->Draw(modelTextureHandle_,blendMode_);
 	particle_->Draw(particleTextureHandle_, blendMode_);
 
 	///
