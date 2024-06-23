@@ -70,7 +70,7 @@ void cSprite::Update()
 
 void cSprite::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
 {
-	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPipelineState(blendMode));//PSOを設定
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetParticlePipelineState(blendMode));//PSOを設定
 	/*VBVの設定*/
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	/*IBVの設定*/

@@ -21,7 +21,7 @@ uint32_t cTextureManager::Load(const std::string& filePath)
 
 void cTextureManager::InitializeSystem()
 {
-	textureIndex_ = 0;
+	textureIndex_ = textureIndexDecrimentSize_ - 1;
 	CreateFence();
 }
 
@@ -52,8 +52,8 @@ uint32_t cTextureManager::TransferTexture(const std::string& filePath)
 	/*コンテナに格納*/
 	textures_.push_back(texture);
 	/*Srvの作成*/
-	cDirectXCommon::GetDevice()->CreateShaderResourceView(textures_[textureIndex_ - 1].resource.Get(), &srvDesc, textures_[textureIndex_ - 1].cpuDescHandleSRV);
-	return textureIndex_ - 1;
+	cDirectXCommon::GetDevice()->CreateShaderResourceView(textures_[textureIndex_ - textureIndexDecrimentSize_].resource.Get(), &srvDesc, textures_[textureIndex_ - textureIndexDecrimentSize_].cpuDescHandleSRV);
+	return textureIndex_ - textureIndexDecrimentSize_;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cTextureManager::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes)

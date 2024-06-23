@@ -59,15 +59,19 @@ private:
 	/*光源*/
 	DirectionalLight light{};
 
-	/*モデル用変数*/
-	/*モデル用のTexture*/
+	/*パーティクル用変数*/
+	/*パーティクル用のTexture*/
 	uint32_t particleTextureHandle_;
-	/*モデルのトランスフォーム*/
-	sTransform particleTransform_;
-	/*モデルのトランスフォーム*/
+	/*パーティクルのトランスフォーム*/
 	sTransform particleUVTransform_;
-	/*モデル(本人)*/
-	cParticle* model_{};
+	/*パーティクル(本人)*/
+	cParticle* particle_{};
+
+	uint32_t modelTextureHandle_;
+	sTransform modelTransform_;
+	sTransform modelUVTransform_;
+	ModelData modelData_;
+	cModel* model_{};
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };

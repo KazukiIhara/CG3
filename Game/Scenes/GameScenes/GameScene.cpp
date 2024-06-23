@@ -27,6 +27,7 @@ cGameScene::~cGameScene()
 	{
 		/*メインカメラ開放*/
 		delete mainCamera_;
+		delete particle_;
 		delete model_;
 	}
 }
@@ -47,12 +48,18 @@ void cGameScene::Initialize()
 	light.direction = { 0.0f,-1.0f,0.0f };
 	light.intensity = 1.0f;
 
-	/*Modelの作成*/
+	/*Particleの作成*/
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	model_ = new cParticle();
-	model_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
+	particle_ = new cParticle();
+	particle_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
+	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
+	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	model_ = new cModel();
+	modelData_ = model_->LoadObjFile("teapot.obj");
+	model_->Initialize(&modelData_, &modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
+	modelTextureHandle_ = cTextureManager::Load(modelData_.material.textureFilePath);
 }
 
 void cGameScene::Update()
@@ -68,10 +75,7 @@ void cGameScene::Update()
 
 	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat3("Scale", &particleTransform_.scale.x, 0.002f);
-		ImGui::DragFloat3("Rotate", &particleTransform_.rotate.x, 0.002f);
-		ImGui::DragFloat3("Translate", &particleTransform_.translate.x, 0.01f);
-
+		
 		static int currentBlendModeImGui = 0;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
@@ -133,6 +137,7 @@ void cGameScene::Update()
 	mainCamera_->Update();
 
 	model_->Update();
+	particle_->Update();
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
 	imgui_->EndFrame();
@@ -150,7 +155,8 @@ void cGameScene::Draw()
 	/// 描画処理ここから
 	/// 
 
-	model_->Draw(particleTextureHandle_, blendMode_);
+	model_->Draw(modelTextureHandle_,blendMode_);
+	particle_->Draw(particleTextureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

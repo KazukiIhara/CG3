@@ -172,15 +172,13 @@ private: /*メンバ関数*/
 	/// </summary>
 	void CreateFence();
 
-
+	// デプスステンシルリソースの作成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 
 	/// <summary>
 	/// ディスクリプタヒープの作成
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
-
 
 private: /*メンバ変数*/
 

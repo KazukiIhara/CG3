@@ -82,6 +82,7 @@ private: /*メンバ変数*/
 	// テクスチャコンテナ
 	std::vector<Texture> textures_;
 	uint32_t textureIndex_ = 0;
+	static const uint32_t textureIndexDecrimentSize_ = 2;
 
 	/*フェンス*/
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;

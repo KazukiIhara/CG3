@@ -94,11 +94,8 @@ void cDirectXCommon::PreDraw(float clearColor[])
 	scissorRect.top = 0;
 	scissorRect.bottom = cWinApp::kClientHeight;
 
-
 	cDirectXCommon::GetCommandList()->RSSetViewports(1, &viewport);//ViewPort設定
 	cDirectXCommon::GetCommandList()->RSSetScissorRects(1, &scissorRect);//Scirssorを設定
-	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
-	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetRootSignature());
 }
 
 void cDirectXCommon::PostDraw()
@@ -143,7 +140,7 @@ void cDirectXCommon::PostDraw()
 
 void cDirectXCommon::ClearDepthView()
 {
-	//指定した深度で画面全体をクリアする
+	// 指定した深度で画面全体をクリアする
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
@@ -371,7 +368,7 @@ void cDirectXCommon::CreateFence()
 Microsoft::WRL::ComPtr<ID3D12Resource> cDirectXCommon::CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height)
 {
 	/*生成するResourceの設定*/
-	static D3D12_RESOURCE_DESC resourceDesc{};
+	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width;
 	resourceDesc.Height = height;
 	resourceDesc.MipLevels = 1;
@@ -382,11 +379,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource> cDirectXCommon::CreateDepthStencilTexture
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 	/*利用するHeapの設定*/
-	static D3D12_HEAP_PROPERTIES heapProperties{};
+	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
 
 	/*深度値のクリア設定*/
-	static D3D12_CLEAR_VALUE depthClearValue{};
+	D3D12_CLEAR_VALUE depthClearValue{};
 	depthClearValue.DepthStencil.Depth = 1.0f;
 	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 

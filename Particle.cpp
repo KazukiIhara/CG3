@@ -104,7 +104,9 @@ void cParticle::Update()
 
 void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
 {
-	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPipelineState(blendMode));//PSOを設定
+	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
+	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetParticleRootSignature());
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetParticlePipelineState(blendMode));//PSOを設定
 	//VBVを設定
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
@@ -226,8 +228,8 @@ void cParticle::CreateSRV()
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount_;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = cDirectXCommon::GetCPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 3);
-	instancingSrvHandleGPU = cDirectXCommon::GetGPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 3);
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = cDirectXCommon::GetCPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
+	instancingSrvHandleGPU = cDirectXCommon::GetGPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
 	cDirectXCommon::GetDevice()->CreateShaderResourceView(transformationResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 }
 
