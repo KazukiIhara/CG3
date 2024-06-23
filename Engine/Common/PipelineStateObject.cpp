@@ -9,43 +9,79 @@ cPipelineStateObject* cPipelineStateObject::GetInstance()
 
 void cPipelineStateObject::Initialize()
 {
-	/*RootSignatureの作成*/
-	CreateRootSignature();
-	/*Shaderをコンパイル*/
+	// RootSignatureの作成
+	// 3DModel用
+	Create3DModelRootSignature();
+	// Particle用
+	CreateParticleRootSignature();
+
+	// Shaderをコンパイル
 	CompileShaders();
-	/*PSOの作成*/
-	CreatePipelineStateObject();
+
+	// PSOの作成
+	// 3Dmodel用
+	Create3DModelPipelineStateObject();
+	// Particle用
+	CreateParticlePipelineStateObject();
 }
 
-ID3D12PipelineState* cPipelineStateObject::GetPipelineState(Blendmode blendMode)
+ID3D12PipelineState* cPipelineStateObject::Get3DModelPipelineState(Blendmode blendMode)
 {
 	switch (blendMode)
 	{
 	case cPipelineStateObject::kBlendModeNone:
-		return GetInstance()->graphicsPipelineState_[kBlendModeNone].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeNone].Get();
 		break;
 	case cPipelineStateObject::kBlendModeNormal:
-		return GetInstance()->graphicsPipelineState_[kBlendModeNormal].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeNormal].Get();
 		break;
 	case cPipelineStateObject::kBlendModeAdd:
-		return GetInstance()->graphicsPipelineState_[kBlendModeAdd].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeAdd].Get();
 		break;
 	case cPipelineStateObject::kBlendModeSubtract:
-		return GetInstance()->graphicsPipelineState_[kBlendModeSubtract].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeSubtract].Get();
 		break;
 	case cPipelineStateObject::kBlendModeMultiply:
-		return GetInstance()->graphicsPipelineState_[kBlendModeMultiply].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeMultiply].Get();
 		break;
 	case cPipelineStateObject::kBlendModeScreen:
-		return GetInstance()->graphicsPipelineState_[kBlendModeScreen].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeScreen].Get();
 		break;
 	default:
-		return GetInstance()->graphicsPipelineState_[kBlendModeNone].Get();
+		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeNone].Get();
 		break;
 	}
 }
 
-void cPipelineStateObject::CreateRootSignature()
+ID3D12PipelineState* cPipelineStateObject::GetParticlePipelineState(Blendmode blendMode)
+{
+	switch (blendMode)
+	{
+	case cPipelineStateObject::kBlendModeNone:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeNone].Get();
+		break;
+	case cPipelineStateObject::kBlendModeNormal:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeNormal].Get();
+		break;
+	case cPipelineStateObject::kBlendModeAdd:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeAdd].Get();
+		break;
+	case cPipelineStateObject::kBlendModeSubtract:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeSubtract].Get();
+		break;
+	case cPipelineStateObject::kBlendModeMultiply:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeMultiply].Get();
+		break;
+	case cPipelineStateObject::kBlendModeScreen:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeScreen].Get();
+		break;
+	default:
+		return GetInstance()->particleGraphicsPipelineState_[kBlendModeNone].Get();
+		break;
+	}
+}
+
+void cPipelineStateObject::Create3DModelRootSignature()
 {
 	HRESULT hr = S_FALSE;
 
@@ -55,25 +91,26 @@ void cPipelineStateObject::CreateRootSignature()
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//RootSignature作成
+	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	//RootParameter作成。
+	// RootParameter作成。
 	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;					//レジスタ番号0とバインド
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DescriptorTable使う
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //VirtexShaderで使う
-	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;	//Tableの中身の配列を指定
-	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);// Tableで利用する数
+
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;//VirtexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 0;
 
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1;					//レジスタ番号1とバインド
@@ -81,20 +118,20 @@ void cPipelineStateObject::CreateRootSignature()
 	descriptionRootSignature.pParameters = rootParameters;				//ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	//配列の長さ
 
-	//Samplerの設定
+	// Samplerの設定
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
-	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;	//0~1の範囲外をリピート
+	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;			//バイリニアフィルタ
+	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;		//0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;//比較しない
-	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのMipmapを使う
-	staticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
+	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;		//比較しない
+	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;						//ありったけのMipmapを使う
+	staticSamplers[0].ShaderRegister = 0;								//レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
-	//シリアライズしてバイナリにする
+	// シリアライズしてバイナリにする
 	ID3DBlob* signatureBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
@@ -105,15 +142,83 @@ void cPipelineStateObject::CreateRootSignature()
 		assert(false);
 	}
 	//バイナリをもとに生成
-	rootSignature_ = nullptr;
+	model3DRootSignature_ = nullptr;
 	hr = cDirectXCommon::GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&model3DRootSignature_));
+	assert(SUCCEEDED(hr));
+}
+
+void cPipelineStateObject::CreateParticleRootSignature()
+{
+	HRESULT hr = S_FALSE;
+
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0;
+	descriptorRange[0].NumDescriptors = 1;
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// RootSignature作成
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
+	descriptionRootSignature.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	// RootParameter作成。
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0;					//レジスタ番号0とバインド
+
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		//DescriptorTable使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;				//VirtexShaderで使う
+	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;				//Tableの中身の配列を指定
+	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	// Tableで利用する数
+
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	rootParameters[3].Descriptor.ShaderRegister = 1;					//レジスタ番号1とバインド
+
+	descriptionRootSignature.pParameters = rootParameters;				//ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);	//配列の長さ
+
+	// Samplerの設定
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;			//バイリニアフィルタ
+	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;		//0~1の範囲外をリピート
+	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;		//比較しない
+	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;						//ありったけのMipmapを使う
+	staticSamplers[0].ShaderRegister = 0;								//レジスタ番号0を使う
+	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	descriptionRootSignature.pStaticSamplers = staticSamplers;
+	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+
+	// シリアライズしてバイナリにする
+	ID3DBlob* signatureBlob = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	if (FAILED(hr))
+	{
+		cLog::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		assert(false);
+	}
+	//バイナリをもとに生成
+	particleRootSignature_ = nullptr;
+	hr = cDirectXCommon::GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&particleRootSignature_));
 	assert(SUCCEEDED(hr));
 }
 
 D3D12_INPUT_LAYOUT_DESC cPipelineStateObject::InputLayoutSetting()
 {
-	//InputLayout
+	// InputLayout
 	static D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
@@ -254,33 +359,45 @@ void cPipelineStateObject::CompileShaders()
 	assert(SUCCEEDED(hr));
 
 	//Shaderをコンパイルする
-	vertexShaderBlob_ = nullptr;
-	vertexShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.VS.hlsl",
+	// 3Dmodel用シェーダー
+	model3DVertexShaderBlob_ = nullptr;
+	model3DVertexShaderBlob_ = CompileShader(L"Engine/Shaders/Object3d.VS.hlsl",
 		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(vertexShaderBlob_ != nullptr);
+	assert(model3DVertexShaderBlob_ != nullptr);
 
-	pixelShaderBlob_ = nullptr;
-	pixelShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.PS.hlsl",
+	model3DPixelShaderBlob_ = nullptr;
+	model3DPixelShaderBlob_ = CompileShader(L"Engine/Shaders/Object3d.PS.hlsl",
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(pixelShaderBlob_ != nullptr);
+	assert(model3DPixelShaderBlob_ != nullptr);
+
+	// Particle用シェーダー
+	particleVertexShaderBlob_ = nullptr;
+	particleVertexShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.VS.hlsl",
+		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(particleVertexShaderBlob_ != nullptr);
+
+	particlePixelShaderBlob_ = nullptr;
+	particlePixelShaderBlob_ = CompileShader(L"Engine/Shaders/Particle.PS.hlsl",
+		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(particlePixelShaderBlob_ != nullptr);
 
 }
 
-void cPipelineStateObject::CreatePipelineStateObject()
+void cPipelineStateObject::Create3DModelPipelineStateObject()
 {
 	HRESULT hr;
 
-	assert(rootSignature_);
-	assert(vertexShaderBlob_);
-	assert(pixelShaderBlob_);
+	assert(model3DRootSignature_);
+	assert(model3DVertexShaderBlob_);
+	assert(model3DPixelShaderBlob_);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();
+	graphicsPipelineStateDesc.pRootSignature = model3DRootSignature_.Get();
 	graphicsPipelineStateDesc.InputLayout = InputLayoutSetting();
-	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() };
-	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() };
+	graphicsPipelineStateDesc.VS = { model3DVertexShaderBlob_->GetBufferPointer(),
+	model3DVertexShaderBlob_->GetBufferSize() };
+	graphicsPipelineStateDesc.PS = { model3DPixelShaderBlob_->GetBufferPointer(),
+	model3DPixelShaderBlob_->GetBufferSize() };
 	graphicsPipelineStateDesc.RasterizerState = RasterizerStateSetting();
 	//書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
@@ -299,9 +416,50 @@ void cPipelineStateObject::CreatePipelineStateObject()
 	for (uint32_t i = 0; i < kBlendModeNum; i++)
 	{
 		graphicsPipelineStateDesc.BlendState = BlendStateSetting(i);
-		graphicsPipelineState_[i] = nullptr;
+		model3DGraphicsPipelineState_[i] = nullptr;
 		hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-			IID_PPV_ARGS(&graphicsPipelineState_[i]));
+			IID_PPV_ARGS(&model3DGraphicsPipelineState_[i]));
+		assert(SUCCEEDED(hr));
+	}
+
+}
+
+void cPipelineStateObject::CreateParticlePipelineStateObject()
+{
+	HRESULT hr;
+
+	assert(particleRootSignature_);
+	assert(particleVertexShaderBlob_);
+	assert(particlePixelShaderBlob_);
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
+	graphicsPipelineStateDesc.pRootSignature = particleRootSignature_.Get();
+	graphicsPipelineStateDesc.InputLayout = InputLayoutSetting();
+	graphicsPipelineStateDesc.VS = { particleVertexShaderBlob_->GetBufferPointer(),
+	particleVertexShaderBlob_->GetBufferSize() };
+	graphicsPipelineStateDesc.PS = { particlePixelShaderBlob_->GetBufferPointer(),
+	particlePixelShaderBlob_->GetBufferSize() };
+	graphicsPipelineStateDesc.RasterizerState = RasterizerStateSetting();
+	//書き込むRTVの情報
+	graphicsPipelineStateDesc.NumRenderTargets = 1;
+	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	//利用するトポロジ(形状)のタイプ、三角形
+	graphicsPipelineStateDesc.PrimitiveTopologyType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	//どのように画面に色を打ち込むかの設定(気にしなくて良い)
+	graphicsPipelineStateDesc.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	/*DepthStencilの設定*/
+	graphicsPipelineStateDesc.DepthStencilState = DepthStecilDescSetting();
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	//実際に生成
+	for (uint32_t i = 0; i < kBlendModeNum; i++)
+	{
+		graphicsPipelineStateDesc.BlendState = BlendStateSetting(i);
+		particleGraphicsPipelineState_[i] = nullptr;
+		hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+			IID_PPV_ARGS(&particleGraphicsPipelineState_[i]));
 		assert(SUCCEEDED(hr));
 	}
 
