@@ -95,6 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="Engine\2d\Sprite.cpp" />
     <ClCompile Include="Engine\3d\Model.cpp" />
+    <ClCompile Include="Engine\3d\ParticleSystem.cpp" />
     <ClCompile Include="Engine\3d\Sphere.cpp" />
     <ClCompile Include="Engine\3d\Triangle.cpp" />
     <ClCompile Include="Engine\Common\DirectXCommon.cpp" />
@@ -110,6 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="Engine\externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="Engine\externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Engine\externals\libs\math\MathOperator.cpp" />
     <ClCompile Include="Engine\Lazieal.cpp" />
     <ClCompile Include="Game\Cameras\CameraController.cpp" />
     <ClCompile Include="Game\GameObjects\Player.cpp" />
@@ -117,12 +119,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp" />
     <ClCompile Include="Game\Scenes\Manager\SceneManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MathOperator.cpp" />
-    <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\2d\Sprite.h" />
     <ClInclude Include="Engine\3d\Model.h" />
+    <ClInclude Include="Engine\3d\ParticleSystem.h" />
     <ClInclude Include="Engine\3d\Sphere.h" />
     <ClInclude Include="Engine\3d\Triangle.h" />
     <ClInclude Include="Engine\Common\DirectXCommon.h" />
@@ -139,6 +140,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="Engine\externals\imgui\imstb_textedit.h" />
     <ClInclude Include="Engine\externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="Engine\externals\libs\math\MathOperator.h" />
     <ClInclude Include="Engine\externals\libs\math\Matrix4x4.h" />
     <ClInclude Include="Engine\externals\libs\math\Vector2.h" />
     <ClInclude Include="Engine\externals\libs\math\Vector3.h" />
@@ -149,8 +151,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Game\Scenes\Base\BaseScene.h" />
     <ClInclude Include="Game\Scenes\GameScenes\GameScene.h" />
     <ClInclude Include="Game\Scenes\Manager\SceneManager.h" />
-    <ClInclude Include="MathOperator.h" />
-    <ClInclude Include="Particle.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\externals\imgui\LICENSE.txt" />

@@ -9,7 +9,7 @@
 #include "Triangle.h"
 #include "Sphere.h"
 #include "Sprite.h"
-#include "Particle.h"
+#include "ParticleSystem.h"
 #include "ImGuiManager.h"
 
 
@@ -45,7 +45,7 @@ void cGameScene::Initialize() {
 
 	/*Particleの作成*/
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	particle_ = new cParticle();
+	particle_ = new cParticleSystem();
 	particle_->Initialize(viewProjectionMatrix_, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/circle.png");
 
