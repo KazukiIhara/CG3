@@ -67,9 +67,11 @@ private:
 	/*パーティクル(本人)*/
 	cParticle* particle_{};
 
+
 	sTransform modelTransform_;
 	sTransform modelUVTransform_;
 	cModel* model_{};
+
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };
