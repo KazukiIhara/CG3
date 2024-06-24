@@ -70,6 +70,7 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
 	ImGui::Checkbox("isMove", &isMove);
 
+	// 乱数を使う準備
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
