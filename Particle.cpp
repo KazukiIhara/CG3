@@ -4,7 +4,7 @@
 #include "TextureManager.h"
 
 
-void cParticle::Initialize(Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
+void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform)
 {
 	/*NullCheck*/
 	assert(uvTransform);
@@ -31,7 +31,6 @@ void cParticle::Initialize(Matrix4x4* viewProjection, DirectionalLight* light, s
 
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
-	directionalLight_ = light;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -65,12 +64,6 @@ void cParticle::Initialize(Matrix4x4* viewProjection, DirectionalLight* light, s
 	MapWVPData();
 #pragma endregion
 
-#pragma region ライト
-	/*DirectionalLight用のリソースを作成*/
-	CreateDirectionalLightResource();
-	/*データを書き込む*/
-	MapDirectionalLightData();
-#pragma endregion
 	CreateSRV();
 }
 
@@ -95,11 +88,6 @@ void cParticle::Update()
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
 	materialData_->uvTransform = uvTransformMatrix;
-
-	directionalLightData_->color = directionalLight_->color;
-	directionalLightData_->direction = directionalLight_->direction;
-	directionalLightData_->intensity = directionalLight_->intensity;
-
 }
 
 void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
@@ -117,8 +105,6 @@ void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode ble
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU);
 	/*SRVのDescriptorTableの先頭を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[textureHandle].gpuDescHandleSRV);
-	/*DirectionalLight*/
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawInstanced(6, instanceCount_, 0, 0);
 }
@@ -175,7 +161,7 @@ void cParticle::MapMaterialData()
 	// mtlのデータから色を書き込む
 	materialData_->color = modelData_.material.color;
 	// Lightingを有効にする
-	materialData_->enbleLighting = true;
+	materialData_->enbleLighting = false;
 	// uvTransform
 	materialData_->uvTransform = MakeIdentity4x4();
 }
@@ -198,24 +184,6 @@ void cParticle::MapWVPData()
 		transformationData_[index].WVP = MakeIdentity4x4();
 		transformationData_[index].World = MakeIdentity4x4();
 	}
-}
-
-void cParticle::CreateDirectionalLightResource()
-{
-	//平行光源用のResourceを作成する
-	directionalLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(DirectionalLight));
-}
-
-void cParticle::MapDirectionalLightData()
-{
-	//データを書き込む
-	directionalLightData_ = nullptr;
-	//書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//ライトのデータを書き込む
-	directionalLightData_->color = directionalLight_->color;
-	directionalLightData_->direction = directionalLight_->direction;
-	directionalLightData_->intensity = directionalLight_->intensity;
 }
 
 void cParticle::CreateSRV()

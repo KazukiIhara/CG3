@@ -50,8 +50,15 @@ void cGameScene::Initialize()
 	/*Particleの作成*/
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particle_ = new cParticle();
-	particle_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
+	particle_->Initialize(viewProjectionMatrix_, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
+
+
+	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
+	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	model_ = new cModel();
+	model_->LoadObjFile("teapot.obj");
+	model_->Initialize(&modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
 
 }
 
@@ -68,7 +75,7 @@ void cGameScene::Update()
 
 	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		
+
 		static int currentBlendModeImGui = 0;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
@@ -146,6 +153,9 @@ void cGameScene::Draw()
 	///
 	/// 描画処理ここから
 	/// 
+
+
+	model_->Draw(blendMode_);
 
 	particle_->Draw(particleTextureHandle_, blendMode_);
 
