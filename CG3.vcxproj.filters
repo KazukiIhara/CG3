@@ -151,6 +151,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
+    <ClCompile Include="MathOperator.cpp">
+      <Filter>Engine\ソース ファイル\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\2d\Sprite.h">
@@ -239,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Engine\ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="MathOperator.h">
+      <Filter>Engine\ヘッダー ファイル\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
