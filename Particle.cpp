@@ -2,10 +2,9 @@
 #include <fstream>
 #include "Particle.h"
 #include "TextureManager.h"
+#include <random>
 
-
-void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform)
-{
+void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	/*NullCheck*/
 	assert(uvTransform);
 	assert(viewProjection);
@@ -21,11 +20,13 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform)
 
 	modelData_.material.enbleLighting = false;
 
-	for (uint32_t index = 0; index < instanceCount_; ++index)
-	{
-		transform_[index].scale = { 1.0f,1.0f,1.0f };
-		transform_[index].rotate = { 0.0f,0.0f,0.0f };
-		transform_[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+	for (uint32_t index = 0; index < instanceCount_; ++index) {
+		// トランスフォームの設定
+		particles[index].transform.scale = { 1.0f,1.0f,1.0f };
+		particles[index].transform.rotate = { 0.0f,0.0f,0.0f };
+		particles[index].transform.translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+		// 移動量の設定
+		particles[index].velocity = { 0.0f,1.0f,0.0f };
 	}
 
 	uvTransform_ = uvTransform;
@@ -66,13 +67,13 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform)
 	CreateSRV();
 }
 
-void cParticle::Update()
-{
-	/*WVPマトリックスを作る*/
+void cParticle::Update() {
 
-	for (uint32_t index = 0; index < instanceCount_; ++index)
-	{
-		Matrix4x4 worldMatrix = MakeAffineMatrix(transform_[index].scale, transform_[index].rotate, transform_[index].translate);
+
+	Move();
+	/*WVPマトリックスを作る*/
+	for (uint32_t index = 0; index < instanceCount_; ++index) {
+		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
 		transformationData_[index].WVP = worldViewProjectionMatrix;
@@ -89,8 +90,7 @@ void cParticle::Update()
 	materialData_->uvTransform = uvTransformMatrix;
 }
 
-void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
-{
+void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
 	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
 	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetParticleRootSignature());
 	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetParticlePipelineState(blendMode));//PSOを設定
@@ -108,13 +108,11 @@ void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode ble
 	cDirectXCommon::GetCommandList()->DrawInstanced(6, instanceCount_, 0, 0);
 }
 
-void cParticle::CreateVertexResource()
-{
+void cParticle::CreateVertexResource() {
 	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * modelData_.vertices.size());
 }
 
-void cParticle::CreateVretexBufferView()
-{
+void cParticle::CreateVretexBufferView() {
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
@@ -123,36 +121,30 @@ void cParticle::CreateVretexBufferView()
 	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
 }
 
-void cParticle::MapVertexData()
-{
+void cParticle::MapVertexData() {
 	vertexData_ = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(sVertexData) * modelData_.vertices.size());
 }
 
-void cParticle::CreateIndexResource()
-{
+void cParticle::CreateIndexResource() {
 
 }
 
-void cParticle::CreateIndexBufferView()
-{
+void cParticle::CreateIndexBufferView() {
 
 }
 
-void cParticle::MapIndexResource()
-{
+void cParticle::MapIndexResource() {
 
 }
 
-void cParticle::CreateMaterialResource()
-{
+void cParticle::CreateMaterialResource() {
 	// マテリアル用のリソースを作る。
 	materialResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Material));
 }
 
-void cParticle::MapMaterialData()
-{
+void cParticle::MapMaterialData() {
 	// マテリアルにデータを書き込む
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
@@ -165,28 +157,30 @@ void cParticle::MapMaterialData()
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
-void cParticle::CreateWVPResource()
-{
+void cParticle::CreateWVPResource() {
 	// WVP用のリソースを作る
 	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix) * instanceCount_);
 }
 
-void cParticle::MapWVPData()
-{
+void cParticle::MapWVPData() {
 	/*データを書き込む*/
 	transformationData_ = nullptr;
 	/*書き込むためのアドレスを取得*/
 	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
 	/*単位行列を書き込んでおく*/
-	for (uint32_t index = 0; index < instanceCount_; ++index)
-	{
+	for (uint32_t index = 0; index < instanceCount_; ++index) {
 		transformationData_[index].WVP = MakeIdentity4x4();
 		transformationData_[index].World = MakeIdentity4x4();
 	}
 }
 
-void cParticle::CreateSRV()
-{
+void cParticle::Move() {
+	for (uint32_t index = 0; index < kNumInstance; ++index) {
+		particles[index].transform.translate += Multiply(kDeltaTime, particles[index].velocity);
+	}
+}
+
+void cParticle::CreateSRV() {
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
 	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -200,8 +194,7 @@ void cParticle::CreateSRV()
 	cDirectXCommon::GetDevice()->CreateShaderResourceView(transformationResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes)
-{
+Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	HRESULT hr = S_FALSE;
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uplodeHeapProperties{};

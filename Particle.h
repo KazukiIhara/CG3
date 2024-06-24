@@ -4,8 +4,7 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
-class cParticle
-{
+class cParticle {
 public:
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
@@ -44,13 +43,29 @@ private:
 	/*データを書き込む*/
 	void MapWVPData();
 #pragma endregion
+#pragma region Particle
 
+	// Particleの移動処理
+	void Move();
+
+#pragma endregion
+
+
+
+	// instancingSrvを作る
 	void CreateSRV();
 
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 private:/*メンバ変数*/
+
+	struct Particle {
+		sTransform transform;
+		Vector3 velocity;
+	};
+
+	static const uint32_t kNumInstance = 10;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
@@ -89,12 +104,19 @@ private:/*メンバ変数*/
 	/*WVP用のリソース*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
 	TransformationMatrix* transformationData_;
-	/*トランスフォームデータを受け取る箱*/
-	sTransform transform_[10];
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
 #pragma endregion
+#pragma region Particle
 
-	const uint32_t instanceCount_ = 10;
+	// パーティクル
+	Particle particles[kNumInstance];
+	// デルタタイムを設定。ひとまず60fps固定
+	const float kDeltaTime = 1.0f / 60.0f;
+#pragma endregion
+
+	// instance描画する際に使う変数
+	const uint32_t instanceCount_ = kNumInstance;
+	// srvGpuハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
 };
