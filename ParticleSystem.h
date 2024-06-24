@@ -68,7 +68,7 @@ private:
 #pragma endregion
 #pragma region Particle
 	// Particleの生成
-	Particle MakeNewParticle(std::mt19937& randomEngine);
+	Particle MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate);
 
 #pragma endregion
 

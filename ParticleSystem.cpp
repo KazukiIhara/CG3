@@ -11,6 +11,11 @@ void cParticleSystem::Initialize(Matrix4x4* viewProjection, sTransform* uvTransf
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
+	// エミッターのトランフォーム設定
+	emitter_.transform.translate = { 0.0f,0.0f,0.0f };
+	emitter_.transform.rotate = { 0.0f,0.0f,0.0f };
+	emitter_.transform.scale = { 1.0f,1.0f,1.0f };
+
 	/*NullCheck*/
 	assert(uvTransform);
 	assert(viewProjection);
@@ -69,6 +74,8 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 
 	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
 	ImGui::Checkbox("isMove", &isMove);
+	ImGui::DragFloat3("EmitterTranslate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.0f);
+
 
 	// 乱数を使う準備
 	std::random_device seedGenerator;
@@ -242,7 +249,7 @@ void cParticleSystem::MapInstancingData() {
 	}
 }
 
-cParticleSystem::Particle cParticleSystem::MakeNewParticle(std::mt19937& randomEngine) {
+cParticleSystem::Particle cParticleSystem::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 	// 出現位置と移動量の乱数の生成
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	// 色を決める乱数の生成
@@ -254,8 +261,10 @@ cParticleSystem::Particle cParticleSystem::MakeNewParticle(std::mt19937& randomE
 	// トランスフォームの設定
 	particle.transform.scale = { 1.0f,1.0f,1.0f };
 	particle.transform.rotate = { 0.0f,0.0f,0.0f };
+
+	Vector3 randomTranslate{ distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	// 位置と移動量を[-1,1]の範囲でランダムに初期化
-	particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+	particle.transform.translate = translate + randomTranslate;
 	// 移動量の設定
 	particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	// 色の設定
@@ -313,7 +322,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> cParticleSystem::CreateBufferResource(ID3
 std::list<cParticleSystem::Particle> cParticleSystem::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
 	std::list<cParticleSystem::Particle> particles;
 	for (uint32_t count = 0; count < emitter.count; ++count) {
-		particles.push_back(MakeNewParticle(randomEngine));
+		particles.push_back(MakeNewParticle(randomEngine, emitter.transform.translate));
 	}
 	return particles;
 }
