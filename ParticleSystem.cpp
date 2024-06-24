@@ -73,8 +73,21 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
+	// ボタンを押すとパーティクルが発生
 	if (ImGui::Button("Add Particle")) {
 		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+	}
+
+	// エミッターの処理
+	// 時刻を進める
+	emitter_.frequencyTime += kDeltaTime;
+
+	// 頻度より大きいなら発生
+	if (emitter_.frequency <= emitter_.frequencyTime) {
+		// 発生処理
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+		// 余計に過ぎた時間も加味して頻度計算する
+		emitter_.frequencyTime -= emitter_.frequency;
 	}
 
 	// 描画すべきインスタンス数

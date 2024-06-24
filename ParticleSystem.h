@@ -81,7 +81,7 @@ private:
 private:/*メンバ変数*/
 
 	// パーティクルの最大数
-	static const uint32_t kNumMaxInstance = 10;
+	static const uint32_t kNumMaxInstance = 100;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
@@ -140,6 +140,8 @@ private:/*メンバ変数*/
 	// Emitter
 	Emitter emitter_{
 	.count = 3,
+	.frequency = 0.5f,		// 0.5秒ごとに発生
+	.frequencyTime = 0.0f,	// 発生頻度用の時刻、0で初期化
 	};
 #pragma endregion
 
