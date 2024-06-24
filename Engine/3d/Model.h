@@ -8,12 +8,12 @@ class cModel
 {
 public:
 
-	void Initialize(ModelData* modelData, sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
 	void Update();
-	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
+	void Draw(cPipelineStateObject::Blendmode blendMode);
 
 	/*Objファイルからデータを読み取る関数*/
-	ModelData LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
+	void LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
 
 private:
 #pragma region Vertex
@@ -54,7 +54,7 @@ private:
 #pragma endregion	
 
 	/*マテリアルデータをmtlファイルから作成する*/
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
@@ -62,7 +62,7 @@ private:/*メンバ変数*/
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
-	ModelData* modelData_;
+	ModelData modelData;
 
 #pragma endregion
 

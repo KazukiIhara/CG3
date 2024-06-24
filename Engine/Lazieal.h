@@ -61,6 +61,7 @@ struct DirectionalLight
 struct MaterialData
 {
 	std::string textureFilePath;
+	uint32_t textureHandle;
 	Vector4 color;
 	bool enbleLighting;
 };

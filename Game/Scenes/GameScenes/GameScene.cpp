@@ -57,9 +57,8 @@ void cGameScene::Initialize()
 	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
 	modelUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	model_ = new cModel();
-	modelData_ = model_->LoadObjFile("teapot.obj");
-	model_->Initialize(&modelData_, &modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
-	modelTextureHandle_ = cTextureManager::Load(modelData_.material.textureFilePath);
+	model_->LoadObjFile("teapot.obj");
+	model_->Initialize(&modelTransform_, viewProjectionMatrix_, &light, &modelUVTransform_);
 }
 
 void cGameScene::Update()
@@ -75,7 +74,7 @@ void cGameScene::Update()
 
 	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		
+
 		static int currentBlendModeImGui = 0;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
@@ -155,8 +154,8 @@ void cGameScene::Draw()
 	/// 描画処理ここから
 	/// 
 
-	model_->Draw(modelTextureHandle_,blendMode_);
-	particle_->Draw(particleTextureHandle_, blendMode_);
+	model_->Draw(blendMode_);
+	//particle_->Draw(particleTextureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

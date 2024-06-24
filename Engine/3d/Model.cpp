@@ -4,16 +4,16 @@
 #include "TextureManager.h"
 
 
-void cModel::Initialize(ModelData* modelData, sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
+void cModel::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform)
 {
 	/*NullCheck*/
-	assert(modelData);
+
 	assert(transform);
 	assert(uvTransform);
 	assert(viewProjection);
 	assert(light);
 
-	modelData_ = modelData;
+
 	transform_ = transform;
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
@@ -70,7 +70,7 @@ void cModel::Update()
 	transformationData_->World = worldMatrix;
 
 	// 色を書き込む
-	materialData_->color = modelData_->material.color;
+	materialData_->color = modelData.material.color;
 
 	/*uvTranform用のMatrixを作る*/
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
@@ -84,7 +84,7 @@ void cModel::Update()
 
 }
 
-void cModel::Draw(uint32_t textureHandle,cPipelineStateObject::Blendmode blendMode)
+void cModel::Draw(cPipelineStateObject::Blendmode blendMode)
 {
 	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
 	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::Get3DModelRootSignature());
@@ -98,17 +98,16 @@ void cModel::Draw(uint32_t textureHandle,cPipelineStateObject::Blendmode blendMo
 	/*wvp用のCBufferの場所を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 	/*SRVのDescriptorTableの先頭を設定*/
-	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[textureHandle].gpuDescHandleSRV);
+	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[modelData.material.textureHandle].gpuDescHandleSRV);
 	/*DirectionalLight*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData_->vertices.size()), 1, 0, 0);
+	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
 
-ModelData cModel::LoadObjFile(const std::string& filename, const std::string& directoryPath)
+void cModel::LoadObjFile(const std::string& filename, const std::string& directoryPath)
 {
 	//必要な変数の宣言
-	ModelData modelData;	//構築するmodelData
 	uint32_t meshIndex = 0;
 	bool isFirstMesh = true;
 	std::vector<Vector4> positions;	//位置
@@ -182,14 +181,15 @@ ModelData cModel::LoadObjFile(const std::string& filename, const std::string& di
 			s >> materialFilename;
 			//基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
 			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
+			modelData.material.textureHandle = cTextureManager::Load(modelData.material.textureFilePath);
 		}
 	}
-	return modelData;
+	modelData;
 }
 
 void cModel::CreateVertexResource()
 {
-	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * modelData_->vertices.size());
+	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * modelData.vertices.size());
 }
 
 void cModel::CreateVretexBufferView()
@@ -197,7 +197,7 @@ void cModel::CreateVretexBufferView()
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
-	vertexBufferView_.SizeInBytes = UINT(sizeof(sVertexData) * modelData_->vertices.size());
+	vertexBufferView_.SizeInBytes = UINT(sizeof(sVertexData) * modelData.vertices.size());
 	//1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
 }
@@ -206,7 +206,7 @@ void cModel::MapVertexData()
 {
 	vertexData_ = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	std::memcpy(vertexData_, modelData_->vertices.data(), sizeof(sVertexData) * modelData_->vertices.size());
+	std::memcpy(vertexData_, modelData.vertices.data(), sizeof(sVertexData) * modelData.vertices.size());
 }
 
 void cModel::CreateIndexResource()
@@ -236,8 +236,9 @@ void cModel::MapMaterialData()
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// テクスチャハンドルを取得
 	// mtlのデータから色を書き込む
-	materialData_->color = modelData_->material.color;
+	materialData_->color = modelData.material.color;
 	// Lightingを有効にする
 	materialData_->enbleLighting = true;
 	// uvTransform

@@ -67,10 +67,8 @@ private:
 	/*パーティクル(本人)*/
 	cParticle* particle_{};
 
-	uint32_t modelTextureHandle_;
 	sTransform modelTransform_;
 	sTransform modelUVTransform_;
-	ModelData modelData_;
 	cModel* model_{};
 
 	// BlendMode
