@@ -123,6 +123,8 @@ private:/*メンバ変数*/
 	Particle particles[kNumMaxInstance];
 	// デルタタイムを設定。ひとまず60fps固定
 	const float kDeltaTime = 1.0f / 60.0f;
+
+
 #pragma endregion
 
 	// instance描画する際に使う変数
@@ -130,4 +132,11 @@ private:/*メンバ変数*/
 
 	// srvGpuハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
+
+
+	/// 
+	/// for Debug
+	/// 
+	bool isMove = false;
+	bool isUseBillboard = false;
 };

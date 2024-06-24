@@ -3,6 +3,7 @@
 #include "Particle.h"
 #include "TextureManager.h"
 #include "MathOperator.h"
+#include "ImGuiManager.h"
 
 void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
@@ -70,6 +71,10 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 }
 
 void cParticle::Update(const Matrix4x4& cameraMatrix) {
+
+	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
+	ImGui::Checkbox("isMove", &isMove);
+
 	// 描画すべきインスタンス数
 	instanceCount_ = 0;
 
@@ -79,6 +84,12 @@ void cParticle::Update(const Matrix4x4& cameraMatrix) {
 			continue;
 		}
 
+		if (isMove) {
+			// 移動
+			Move(index);
+			// 経過時間を足す
+			particles[index].currentTime += kDeltaTime;
+		}
 		// 180度回す回転行列を作成する
 		Matrix4x4 backFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
 
@@ -92,14 +103,15 @@ void cParticle::Update(const Matrix4x4& cameraMatrix) {
 
 		Matrix4x4 translateMatrix = MakeTranslateMatrix(particles[index].transform.translate);
 
+		if (!isUseBillboard) {
+			billboardMatrix = MakeIdentity4x4();
+		}
+
 		Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
 
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-		// 移動
-		//Move(index);
-		// 経過時間を足す
-		//particles[index].currentTime += kDeltaTime;
+
 		// 透明度
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
 
