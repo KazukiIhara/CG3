@@ -92,6 +92,7 @@ void cParticle::Update() {
 
 		instancingData_[instanceCount_].WVP = worldViewProjectionMatrix;
 		instancingData_[instanceCount_].World = worldMatrix;
+		// 色を入力
 		instancingData_[instanceCount_].color.x = particles[index].color.x;
 		instancingData_[instanceCount_].color.y = particles[index].color.y;
 		instancingData_[instanceCount_].color.z = particles[index].color.z;
