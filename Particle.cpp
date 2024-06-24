@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Particle.h"
 #include "TextureManager.h"
+#include "MathOperator.h"
 
 void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
