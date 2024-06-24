@@ -4,8 +4,11 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 #include <random>
+#include <iostream>
+#include <list>
+#include <algorithm>
 
-class cParticle {
+class cParticleSystem {
 public:
 	struct Particle {
 		sTransform transform;
@@ -19,6 +22,13 @@ public:
 		Matrix4x4 WVP;
 		Matrix4x4 World;
 		Vector4 color;
+	};
+
+	struct Emitter {
+		sTransform transform;	// エミッターのTransform
+		uint32_t count;			// 発生数
+		float frequency;		// 発生頻度
+		float frequencyTime;	// 頻度用時刻
 	};
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
@@ -59,8 +69,6 @@ private:
 #pragma region Particle
 	// Particleの生成
 	Particle MakeNewParticle(std::mt19937& randomEngine);
-	// Particleの移動処理
-	void Move(uint32_t index);
 
 #pragma endregion
 
@@ -73,7 +81,7 @@ private:
 private:/*メンバ変数*/
 
 	// パーティクルの最大数
-	static const uint32_t kNumMaxInstance = 200;
+	static const uint32_t kNumMaxInstance = 10;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
@@ -119,12 +127,20 @@ private:/*メンバ変数*/
 #pragma endregion
 
 #pragma region Particle
+
 	// パーティクル
-	Particle particles[kNumMaxInstance];
+	std::list<Particle> particles_;
 	// デルタタイムを設定。ひとまず60fps固定
 	const float kDeltaTime = 1.0f / 60.0f;
 
-
+#pragma endregion
+#pragma region Emitter
+	// パーティクルの発生関数
+	std::list<Particle> Emit(const Emitter& emitter, std::mt19937& randomEngine);
+	// Emitter
+	Emitter emitter_{
+	.count = 3,
+	};
 #pragma endregion
 
 	// instance描画する際に使う変数
@@ -132,7 +148,6 @@ private:/*メンバ変数*/
 
 	// srvGpuハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
-
 
 	/// 
 	/// for Debug

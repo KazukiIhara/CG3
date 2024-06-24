@@ -1,11 +1,11 @@
 #include <sstream>
 #include <fstream>
-#include "Particle.h"
+#include "ParticleSystem.h"
 #include "TextureManager.h"
 #include "MathOperator.h"
 #include "ImGuiManager.h"
 
-void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
+void cParticleSystem::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
 	// 乱数生成器の初期化
 	std::random_device seedGenerator;
@@ -25,11 +25,6 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	modelData_.material.color = { 1.0f,1.0f,1.0f,1.0f };
 
 	modelData_.material.enbleLighting = false;
-
-	// パーティクルの生成
-	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
-		particles[index] = MakeNewParticle(randomEngine);
-	}
 
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
@@ -70,61 +65,74 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	CreateSRV();
 }
 
-void cParticle::Update(const Matrix4x4& cameraMatrix) {
+void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 
 	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
 	ImGui::Checkbox("isMove", &isMove);
 
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
+	if (ImGui::Button("Add Particle")) {
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+	}
+
 	// 描画すべきインスタンス数
 	instanceCount_ = 0;
 
-	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
+	for (std::list<Particle>::iterator particleIterator = particles_.begin();
+		particleIterator != particles_.end();) {
 		// 生存時間を過ぎていたら更新せず描画対象にしない
-		if (particles[index].lifeTime <= particles[index].currentTime) {
+		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+			particleIterator = particles_.erase(particleIterator);
 			continue;
 		}
 
+		// 透明度
+		float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+
 		if (isMove) {
 			// 移動
-			Move(index);
+			(*particleIterator).transform.translate += Multiply(kDeltaTime, (*particleIterator).velocity);
 			// 経過時間を足す
-			particles[index].currentTime += kDeltaTime;
-		}
-		// 180度回す回転行列を作成する
-		Matrix4x4 backFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
-
-		// WVPマトリックスを求める
-		Matrix4x4 scaleMatrix = MakeScaleMatrix(particles[index].transform.scale);
-		Matrix4x4 billboardMatrix = backFrontMatrix * cameraMatrix;
-		// 平行移動成分を削除
-		billboardMatrix.m[3][0] = 0.0f;
-		billboardMatrix.m[3][1] = 0.0f;
-		billboardMatrix.m[3][2] = 0.0f;
-
-		Matrix4x4 translateMatrix = MakeTranslateMatrix(particles[index].transform.translate);
-
-		if (!isUseBillboard) {
-			billboardMatrix = MakeIdentity4x4();
+			(*particleIterator).currentTime += kDeltaTime;
 		}
 
-		Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+		if (instanceCount_ < kNumMaxInstance) {
+			// 180度回す回転行列を作成する
+			Matrix4x4 backFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
 
-		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
+			// WVPマトリックスを求める
+			Matrix4x4 scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
+			Matrix4x4 billboardMatrix = backFrontMatrix * cameraMatrix;
+			// 平行移動成分を削除
+			billboardMatrix.m[3][0] = 0.0f;
+			billboardMatrix.m[3][1] = 0.0f;
+			billboardMatrix.m[3][2] = 0.0f;
 
+			Matrix4x4 translateMatrix = MakeTranslateMatrix((*particleIterator).transform.translate);
 
-		// 透明度
-		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
+			if (!isUseBillboard) {
+				billboardMatrix = MakeIdentity4x4();
+			}
 
-		instancingData_[instanceCount_].WVP = worldViewProjectionMatrix;
-		instancingData_[instanceCount_].World = worldMatrix;
-		// 色を入力
-		instancingData_[instanceCount_].color.x = particles[index].color.x;
-		instancingData_[instanceCount_].color.y = particles[index].color.y;
-		instancingData_[instanceCount_].color.z = particles[index].color.z;
-		instancingData_[instanceCount_].color.w = alpha;
+			Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
 
-		// 生きているParticleの数を1つカウントする
-		instanceCount_++;
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
+
+			instancingData_[instanceCount_].WVP = worldViewProjectionMatrix;
+			instancingData_[instanceCount_].World = worldMatrix;
+			// 色を入力
+			instancingData_[instanceCount_].color.x = (*particleIterator).color.x;
+			instancingData_[instanceCount_].color.y = (*particleIterator).color.y;
+			instancingData_[instanceCount_].color.z = (*particleIterator).color.z;
+			instancingData_[instanceCount_].color.w = alpha;
+
+			// 生きているParticleの数を1つカウントする
+			instanceCount_++;
+		}
+		// 次のイテレーターに進める
+		++particleIterator;
 	}
 
 	// 色を書き込む
@@ -135,9 +143,10 @@ void cParticle::Update(const Matrix4x4& cameraMatrix) {
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
 	materialData_->uvTransform = uvTransformMatrix;
+
 }
 
-void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
+void cParticleSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
 	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
 	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetParticleRootSignature());
 	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetParticlePipelineState(blendMode));//PSOを設定
@@ -155,11 +164,11 @@ void cParticle::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode ble
 	cDirectXCommon::GetCommandList()->DrawInstanced(6, instanceCount_, 0, 0);
 }
 
-void cParticle::CreateVertexResource() {
+void cParticleSystem::CreateVertexResource() {
 	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * modelData_.vertices.size());
 }
 
-void cParticle::CreateVretexBufferView() {
+void cParticleSystem::CreateVretexBufferView() {
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
@@ -168,30 +177,30 @@ void cParticle::CreateVretexBufferView() {
 	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
 }
 
-void cParticle::MapVertexData() {
+void cParticleSystem::MapVertexData() {
 	vertexData_ = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(sVertexData) * modelData_.vertices.size());
 }
 
-void cParticle::CreateIndexResource() {
+void cParticleSystem::CreateIndexResource() {
 
 }
 
-void cParticle::CreateIndexBufferView() {
+void cParticleSystem::CreateIndexBufferView() {
 
 }
 
-void cParticle::MapIndexResource() {
+void cParticleSystem::MapIndexResource() {
 
 }
 
-void cParticle::CreateMaterialResource() {
+void cParticleSystem::CreateMaterialResource() {
 	// マテリアル用のリソースを作る。
 	materialResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Material));
 }
 
-void cParticle::MapMaterialData() {
+void cParticleSystem::MapMaterialData() {
 	// マテリアルにデータを書き込む
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
@@ -204,12 +213,12 @@ void cParticle::MapMaterialData() {
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
-void cParticle::CreateInstancingResource() {
+void cParticleSystem::CreateInstancingResource() {
 	// instancing用のリソースを作る
 	instancingResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance);
 }
 
-void cParticle::MapInstancingData() {
+void cParticleSystem::MapInstancingData() {
 	instancingData_ = nullptr;
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 
@@ -219,7 +228,7 @@ void cParticle::MapInstancingData() {
 	}
 }
 
-cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
+cParticleSystem::Particle cParticleSystem::MakeNewParticle(std::mt19937& randomEngine) {
 	// 出現位置と移動量の乱数の生成
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	// 色を決める乱数の生成
@@ -245,11 +254,7 @@ cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
 	return particle;
 }
 
-void cParticle::Move(uint32_t index) {
-	particles[index].transform.translate += Multiply(kDeltaTime, particles[index].velocity);
-}
-
-void cParticle::CreateSRV() {
+void cParticleSystem::CreateSRV() {
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
 	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -263,7 +268,7 @@ void cParticle::CreateSRV() {
 	cDirectXCommon::GetDevice()->CreateShaderResourceView(instancingResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
+Microsoft::WRL::ComPtr<ID3D12Resource> cParticleSystem::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	HRESULT hr = S_FALSE;
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uplodeHeapProperties{};
@@ -289,6 +294,14 @@ Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Dev
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(hr));
 	return resource;
+}
+
+std::list<cParticleSystem::Particle> cParticleSystem::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
+	std::list<cParticleSystem::Particle> particles;
+	for (uint32_t count = 0; count < emitter.count; ++count) {
+		particles.push_back(MakeNewParticle(randomEngine));
+	}
+	return particles;
 }
 
 

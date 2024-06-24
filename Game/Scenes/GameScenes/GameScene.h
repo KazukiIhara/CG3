@@ -12,7 +12,7 @@ class cModel;
 class cTriangle;
 class cSprite;
 class cSphere;
-class cParticle;
+class cParticleSystem;
 
 class cGameScene :public cBaseScene
 {
@@ -65,7 +65,7 @@ private:
 	/*パーティクルのトランスフォーム*/
 	sTransform particleUVTransform_;
 	/*パーティクル(本人)*/
-	cParticle* particle_{};
+	cParticleSystem* particle_{};
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };

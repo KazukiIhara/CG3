@@ -148,7 +148,7 @@
     <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp">
       <Filter>Game\GameScenes\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
+    <ClCompile Include="ParticleSystem.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="MathOperator.cpp">
@@ -240,7 +240,7 @@
     <ClInclude Include="Game\Scenes\GameScenes\GameScene.h">
       <Filter>Game\GameScenes\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
+    <ClInclude Include="ParticleSystem.h">
       <Filter>Engine\ヘッダー ファイル\3D</Filter>
     </ClInclude>
     <ClInclude Include="MathOperator.h">
