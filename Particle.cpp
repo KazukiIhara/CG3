@@ -5,6 +5,12 @@
 #include <random>
 
 void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
+
+	// 乱数生成器の初期化
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
+
 	/*NullCheck*/
 	assert(uvTransform);
 	assert(viewProjection);
@@ -21,12 +27,15 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	modelData_.material.enbleLighting = false;
 
 	for (uint32_t index = 0; index < instanceCount_; ++index) {
+		std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+
 		// トランスフォームの設定
 		particles[index].transform.scale = { 1.0f,1.0f,1.0f };
 		particles[index].transform.rotate = { 0.0f,0.0f,0.0f };
-		particles[index].transform.translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+		// 位置と移動量を[-1,1]の範囲でランダムに初期化
+		particles[index].transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 		// 移動量の設定
-		particles[index].velocity = { 0.0f,1.0f,0.0f };
+		particles[index].velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	}
 
 	uvTransform_ = uvTransform;
