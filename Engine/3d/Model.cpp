@@ -108,8 +108,6 @@ void cModel::Draw(cPipelineStateObject::Blendmode blendMode)
 void cModel::LoadObjFile(const std::string& filename, const std::string& directoryPath)
 {
 	//必要な変数の宣言
-	uint32_t meshIndex = 0;
-	bool isFirstMesh = true;
 	std::vector<Vector4> positions;	//位置
 	std::vector<Vector3> normals;	//法線
 	std::vector<Vector2> texcoords;	//テクスチャ座標
@@ -184,7 +182,6 @@ void cModel::LoadObjFile(const std::string& filename, const std::string& directo
 			modelData.material.textureHandle = cTextureManager::Load(modelData.material.textureFilePath);
 		}
 	}
-	modelData;
 }
 
 void cModel::CreateVertexResource()
