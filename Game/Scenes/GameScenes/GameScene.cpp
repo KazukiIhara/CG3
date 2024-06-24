@@ -51,7 +51,7 @@ void cGameScene::Initialize()
 	/*Particleの作成*/
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particle_ = new cParticle();
-	particle_->Initialize(viewProjectionMatrix_, &light, &particleUVTransform_);
+	particle_->Initialize(viewProjectionMatrix_, &particleUVTransform_);
 	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 
 	modelTransform_ = { {1.0f,1.0f,1.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -155,7 +155,7 @@ void cGameScene::Draw()
 	/// 
 
 	model_->Draw(blendMode_);
-	//particle_->Draw(particleTextureHandle_, blendMode_);
+	particle_->Draw(particleTextureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

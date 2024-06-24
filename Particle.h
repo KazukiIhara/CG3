@@ -8,7 +8,7 @@ class cParticle
 {
 public:
 
-	void Initialize(Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
+	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
@@ -44,11 +44,6 @@ private:
 	/*データを書き込む*/
 	void MapWVPData();
 #pragma endregion
-
-#pragma region Light
-	void CreateDirectionalLightResource();
-	void MapDirectionalLightData();
-#pragma endregion	
 
 	void CreateSRV();
 
@@ -98,15 +93,6 @@ private:/*メンバ変数*/
 	sTransform transform_[10];
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
-#pragma endregion
-
-#pragma region ライト
-	/*ライトのリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	/*ライトデータ*/
-	DirectionalLight* directionalLightData_;
-	/*ライトを受け取る箱*/
-	DirectionalLight* directionalLight_;
 #pragma endregion
 
 	const uint32_t instanceCount_ = 10;
