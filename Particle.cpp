@@ -9,7 +9,6 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
-
 	/*NullCheck*/
 	assert(uvTransform);
 	assert(viewProjection);
@@ -57,11 +56,10 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	MapMaterialData();
 #pragma endregion
 
-#pragma region 変換データ
-	/*wvp用のリソース作成*/
-	CreateWVPResource();
-	/*データを書き込む*/
-	MapWVPData();
+#pragma region Instancing
+	CreateInstancingResource();
+	MapInstancingData();
+
 #pragma endregion
 
 	CreateSRV();
@@ -76,8 +74,9 @@ void cParticle::Update() {
 		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-		transformationData_[index].WVP = worldViewProjectionMatrix;
-		transformationData_[index].World = worldMatrix;
+		instancingData_[index].WVP = worldViewProjectionMatrix;
+		instancingData_[index].World = worldMatrix;
+		instancingData_[index].color = particles[index].color;
 	}
 
 	// 色を書き込む
@@ -157,25 +156,25 @@ void cParticle::MapMaterialData() {
 	materialData_->uvTransform = MakeIdentity4x4();
 }
 
-void cParticle::CreateWVPResource() {
-	// WVP用のリソースを作る
-	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix) * instanceCount_);
+void cParticle::CreateInstancingResource() {
+	// instancing用のリソースを作る
+	instancingResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(ParticleForGPU) * kNumInstance);
 }
 
-void cParticle::MapWVPData() {
-	/*データを書き込む*/
-	transformationData_ = nullptr;
-	/*書き込むためのアドレスを取得*/
-	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
-	/*単位行列を書き込んでおく*/
-	for (uint32_t index = 0; index < instanceCount_; ++index) {
-		transformationData_[index].WVP = MakeIdentity4x4();
-		transformationData_[index].World = MakeIdentity4x4();
+void cParticle::MapInstancingData() {
+	instancingData_ = nullptr;
+	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
+
+	for (uint32_t index = 0; index < kNumInstance; ++index) {
+
+		instancingData_[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
 cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+
 	Particle particle;
 	// トランスフォームの設定
 	particle.transform.scale = { 1.0f,1.0f,1.0f };
@@ -184,6 +183,8 @@ cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
 	particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	// 移動量の設定
 	particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+	// 色の設定
+	particle.color = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f };
 
 	return particle;
 }
@@ -202,10 +203,10 @@ void cParticle::CreateSRV() {
 	instancingSrvDesc.Buffer.FirstElement = 0;
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount_;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = cDirectXCommon::GetCPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
 	instancingSrvHandleGPU = cDirectXCommon::GetGPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
-	cDirectXCommon::GetDevice()->CreateShaderResourceView(transformationResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
+	cDirectXCommon::GetDevice()->CreateShaderResourceView(instancingResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cParticle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

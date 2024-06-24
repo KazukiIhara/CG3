@@ -4,13 +4,20 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 #include <random>
+
 class cParticle {
 public:
 	struct Particle {
 		sTransform transform;
 		Vector3 velocity;
+		Vector4 color;
 	};
 
+	struct ParticleForGPU {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+		Vector4 color;
+	};
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
@@ -42,11 +49,10 @@ private:
 	void MapMaterialData();
 #pragma endregion
 
-#pragma region WVP
-	/*wvp用のリソース作成*/
-	void CreateWVPResource();
-	/*データを書き込む*/
-	void MapWVPData();
+#pragma region Instancing
+	void CreateInstancingResource();
+	void MapInstancingData();
+
 #pragma endregion
 #pragma region Particle
 
@@ -100,14 +106,16 @@ private:/*メンバ変数*/
 #pragma endregion
 
 #pragma region 変換
-	/*WVP用のリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
-	TransformationMatrix* transformationData_;
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
 #pragma endregion
-#pragma region Particle
 
+#pragma region Instancing
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_ = nullptr;
+	ParticleForGPU* instancingData_ = nullptr;
+#pragma endregion
+
+#pragma region Particle
 	// パーティクル
 	Particle particles[kNumInstance];
 	// デルタタイムを設定。ひとまず60fps固定
