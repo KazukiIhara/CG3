@@ -13,25 +13,21 @@
 #include "ImGuiManager.h"
 
 
-cGameScene::cGameScene()
-{
+cGameScene::cGameScene() {
 	/*DirectX*/
 	dxCommon = cDirectXCommon::GetInstance();
 	/*ImGui*/
 	imgui_ = cImGuiManager::GetInstance();
 }
 
-cGameScene::~cGameScene()
-{
-	if (sceneNo == kThisSceneNo_)
-	{
+cGameScene::~cGameScene() {
+	if (sceneNo == kThisSceneNo_) {
 		/*メインカメラ開放*/
 		delete mainCamera_;
 		delete particle_;
 	}
 }
-void cGameScene::Initialize()
-{
+void cGameScene::Initialize() {
 	// テクスチャマネージャー初期化
 	cTextureManager::Initialize();
 	/*カメラ作成*/
@@ -51,12 +47,11 @@ void cGameScene::Initialize()
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particle_ = new cParticle();
 	particle_->Initialize(viewProjectionMatrix_, &particleUVTransform_);
-	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
+	particleTextureHandle_ = cTextureManager::Load("Game/Resources/circle.png");
 
 }
 
-void cGameScene::Update()
-{
+void cGameScene::Update() {
 	//////////////////////////////////////
 	/*ImGuiの開始処理*/
 	imgui_->BeginFrame();
@@ -66,14 +61,12 @@ void cGameScene::Update()
 #pragma region ImGui
 	ImGui::Begin("Config");
 
-	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen))
-	{
+	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-		static int currentBlendModeImGui = 0;
+		static int currentBlendModeImGui = 2;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
-		switch (currentBlendModeImGui)
-		{
+		switch (currentBlendModeImGui) {
 		case 0:
 			blendMode_ = cPipelineStateObject::kBlendModeNone;
 			break;
@@ -101,8 +94,7 @@ void cGameScene::Update()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
-	{
+	if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit3("Color", &light.color.x);
 		ImGui::DragFloat3("Direction", &light.direction.x, 0.002f);
 		ImGui::DragFloat("Intensity", &light.intensity, 0.01f);
@@ -110,8 +102,7 @@ void cGameScene::Update()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
-	{
+	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.002f);
 		ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.002f);
 		ImGui::DragFloat3("Translate", &cameraTransform_.translate.x, 0.01f);
@@ -135,8 +126,7 @@ void cGameScene::Update()
 	imgui_->EndFrame();
 }
 
-void cGameScene::Draw()
-{
+void cGameScene::Draw() {
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };
 	/////////////////////////////////
 	/*描画前処理*/ dxCommon->PreDraw(clearColor);
@@ -159,8 +149,7 @@ void cGameScene::Draw()
 	dxCommon->PostDraw();
 }
 
-void cGameScene::ReleasePointer()
-{
+void cGameScene::ReleasePointer() {
 	/*メインカメラ開放*/
 	delete mainCamera_;
 

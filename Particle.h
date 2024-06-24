@@ -3,10 +3,23 @@
 #include <memory>
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
+#include <random>
 
-class cParticle
-{
+class cParticle {
 public:
+	struct Particle {
+		sTransform transform;
+		Vector3 velocity;
+		Vector4 color;
+		float lifeTime;
+		float currentTime;
+	};
+
+	struct ParticleForGPU {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+		Vector4 color;
+	};
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
@@ -38,19 +51,29 @@ private:
 	void MapMaterialData();
 #pragma endregion
 
-#pragma region WVP
-	/*wvp用のリソース作成*/
-	void CreateWVPResource();
-	/*データを書き込む*/
-	void MapWVPData();
+#pragma region Instancing
+	void CreateInstancingResource();
+	void MapInstancingData();
+
+#pragma endregion
+#pragma region Particle
+	// Particleの生成
+	Particle MakeNewParticle(std::mt19937& randomEngine);
+	// Particleの移動処理
+	void Move(uint32_t index);
+
 #pragma endregion
 
+	// instancingSrvを作る
 	void CreateSRV();
 
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 private:/*メンバ変数*/
+
+	// パーティクルの最大数
+	static const uint32_t kNumMaxInstance = 200;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
@@ -86,15 +109,25 @@ private:/*メンバ変数*/
 #pragma endregion
 
 #pragma region 変換
-	/*WVP用のリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
-	TransformationMatrix* transformationData_;
-	/*トランスフォームデータを受け取る箱*/
-	sTransform transform_[10];
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
 #pragma endregion
 
-	const uint32_t instanceCount_ = 10;
+#pragma region Instancing
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_ = nullptr;
+	ParticleForGPU* instancingData_ = nullptr;
+#pragma endregion
+
+#pragma region Particle
+	// パーティクル
+	Particle particles[kNumMaxInstance];
+	// デルタタイムを設定。ひとまず60fps固定
+	const float kDeltaTime = 1.0f / 60.0f;
+#pragma endregion
+
+	// instance描画する際に使う変数
+	uint32_t instanceCount_ = kNumMaxInstance;
+
+	// srvGpuハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
 };

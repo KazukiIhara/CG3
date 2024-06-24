@@ -4,8 +4,7 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
-class cModel
-{
+class cModel {
 public:
 
 	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
