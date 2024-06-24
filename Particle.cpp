@@ -3,6 +3,7 @@
 #include "Particle.h"
 #include "TextureManager.h"
 #include "MathOperator.h"
+#include "ImGuiManager.h"
 
 void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
@@ -69,7 +70,11 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	CreateSRV();
 }
 
-void cParticle::Update() {
+void cParticle::Update(const Matrix4x4& cameraMatrix) {
+
+	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
+	ImGui::Checkbox("isMove", &isMove);
+
 	// 描画すべきインスタンス数
 	instanceCount_ = 0;
 
@@ -79,15 +84,34 @@ void cParticle::Update() {
 			continue;
 		}
 
+		if (isMove) {
+			// 移動
+			Move(index);
+			// 経過時間を足す
+			particles[index].currentTime += kDeltaTime;
+		}
+		// 180度回す回転行列を作成する
+		Matrix4x4 backFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
 
 		// WVPマトリックスを求める
-		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
+		Matrix4x4 scaleMatrix = MakeScaleMatrix(particles[index].transform.scale);
+		Matrix4x4 billboardMatrix = backFrontMatrix * cameraMatrix;
+		// 平行移動成分を削除
+		billboardMatrix.m[3][0] = 0.0f;
+		billboardMatrix.m[3][1] = 0.0f;
+		billboardMatrix.m[3][2] = 0.0f;
+
+		Matrix4x4 translateMatrix = MakeTranslateMatrix(particles[index].transform.translate);
+
+		if (!isUseBillboard) {
+			billboardMatrix = MakeIdentity4x4();
+		}
+
+		Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-		// 移動
-		Move(index);
-		// 経過時間を足す
-		particles[index].currentTime += kDeltaTime;
+
 		// 透明度
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
 

@@ -31,7 +31,7 @@ void cGameScene::Initialize() {
 	// テクスチャマネージャー初期化
 	cTextureManager::Initialize();
 	/*カメラ作成*/
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.1f,1.0f,0.0f},{0.0f,4.0f,10.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,1.0f,0.0f},{0.0f,12.0f,10.0f} };
 	mainCamera_ = new cCameraController();
 	mainCamera_->Initialize(&cameraTransform_);
 
@@ -120,7 +120,7 @@ void cGameScene::Update() {
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
-	particle_->Update();
+	particle_->Update(*mainCamera_->GetWorldMatrix());
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
 	imgui_->EndFrame();

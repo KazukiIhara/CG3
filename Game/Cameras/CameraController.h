@@ -2,8 +2,7 @@
 
 #include "Lazieal.h"
 
-class cCameraController
-{
+class cCameraController {
 public:
 	/// <summary>
 	/// 初期化
@@ -19,9 +18,13 @@ public:
 	/// ビュープロジェクションマトリックスを送る関数
 	/// </summary>
 	/// <returns></returns>
-	Matrix4x4* GetViewProjectionMatrix() { return &viewProjectionMatrix_; }
+	Matrix4x4* GetViewProjectionMatrix() {
+		return &viewProjectionMatrix_;
+	}
 
-
+	Matrix4x4* GetWorldMatrix() {
+		return &worldMatrix_;
+	}
 private:
 
 	/*カメラのトランスフォームを受け取る箱*/
