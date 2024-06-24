@@ -72,7 +72,8 @@ private:
 
 private:/*メンバ変数*/
 
-	static const uint32_t kNumMaxInstance = 10;
+	// パーティクルの最大数
+	static const uint32_t kNumMaxInstance = 200;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
