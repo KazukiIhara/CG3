@@ -148,10 +148,10 @@
     <ClCompile Include="Game\Scenes\GameScenes\GameScene.cpp">
       <Filter>Game\GameScenes\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
+    <ClCompile Include="Engine\3d\ParticleSystem.cpp">
       <Filter>Engine\ソース ファイル\3D</Filter>
     </ClCompile>
-    <ClCompile Include="MathOperator.cpp">
+    <ClCompile Include="Engine\externals\libs\math\MathOperator.cpp">
       <Filter>Engine\ソース ファイル\math</Filter>
     </ClCompile>
   </ItemGroup>
@@ -240,10 +240,10 @@
     <ClInclude Include="Game\Scenes\GameScenes\GameScene.h">
       <Filter>Game\GameScenes\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
+    <ClInclude Include="Engine\3d\ParticleSystem.h">
       <Filter>Engine\ヘッダー ファイル\3D</Filter>
     </ClInclude>
-    <ClInclude Include="MathOperator.h">
+    <ClInclude Include="Engine\externals\libs\math\MathOperator.h">
       <Filter>Engine\ヘッダー ファイル\math</Filter>
     </ClInclude>
   </ItemGroup>
