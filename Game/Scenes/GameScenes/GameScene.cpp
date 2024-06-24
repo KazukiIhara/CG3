@@ -28,6 +28,7 @@ cGameScene::~cGameScene()
 		/*メインカメラ開放*/
 		delete mainCamera_;
 		delete particle_;
+		delete model_;
 	}
 }
 void cGameScene::Initialize()
@@ -136,6 +137,7 @@ void cGameScene::Update()
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
+	model_->Update();
 	particle_->Update();
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
