@@ -4,13 +4,11 @@
 #include <dxcapi.h>
 #include <string>
 
-class cPipelineStateObject
-{
+class cPipelineStateObject {
 public:
 
 	// ブレンドモード
-	enum Blendmode
-	{
+	enum Blendmode {
 		kBlendModeNone,
 		kBlendModeNormal,
 		kBlendModeAdd,
@@ -27,14 +25,12 @@ public:
 
 	// ルートシグネイチャ
 	// 3Dモデル用ルートシグネイチャのゲッター
-	static ID3D12RootSignature* Get3DModelRootSignature()
-	{
+	static ID3D12RootSignature* Get3DModelRootSignature() {
 		return GetInstance()->model3DRootSignature_.Get();
 	}
 
 	// Particle用ルートシグネイチャのゲッター
-	static ID3D12RootSignature* GetParticleRootSignature()
-	{
+	static ID3D12RootSignature* GetParticleRootSignature() {
 		return GetInstance()->particleRootSignature_.Get();
 	}
 
@@ -67,7 +63,10 @@ private:
 	D3D12_RASTERIZER_DESC RasterizerStateSetting();
 
 	// DepthStencilStateの設定
-	D3D12_DEPTH_STENCIL_DESC DepthStecilDescSetting();
+	// 3DModel
+	D3D12_DEPTH_STENCIL_DESC DepthStecilDescSetting3DModel();
+	// Particle
+	D3D12_DEPTH_STENCIL_DESC DepthStecilDescSettingParticle();
 
 	// Shaderをコンパイルする関数をまとめている関数
 	void CompileShaders();

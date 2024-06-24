@@ -1,14 +1,12 @@
 #include "PipelineStateObject.h"
 #include "Log.h"
 
-cPipelineStateObject* cPipelineStateObject::GetInstance()
-{
+cPipelineStateObject* cPipelineStateObject::GetInstance() {
 	static cPipelineStateObject instance;
 	return &instance;
 }
 
-void cPipelineStateObject::Initialize()
-{
+void cPipelineStateObject::Initialize() {
 	// RootSignatureの作成
 	// 3DModel用
 	Create3DModelRootSignature();
@@ -25,10 +23,8 @@ void cPipelineStateObject::Initialize()
 	CreateParticlePipelineStateObject();
 }
 
-ID3D12PipelineState* cPipelineStateObject::Get3DModelPipelineState(Blendmode blendMode)
-{
-	switch (blendMode)
-	{
+ID3D12PipelineState* cPipelineStateObject::Get3DModelPipelineState(Blendmode blendMode) {
+	switch (blendMode) {
 	case cPipelineStateObject::kBlendModeNone:
 		return GetInstance()->model3DGraphicsPipelineState_[kBlendModeNone].Get();
 		break;
@@ -53,10 +49,8 @@ ID3D12PipelineState* cPipelineStateObject::Get3DModelPipelineState(Blendmode ble
 	}
 }
 
-ID3D12PipelineState* cPipelineStateObject::GetParticlePipelineState(Blendmode blendMode)
-{
-	switch (blendMode)
-	{
+ID3D12PipelineState* cPipelineStateObject::GetParticlePipelineState(Blendmode blendMode) {
+	switch (blendMode) {
 	case cPipelineStateObject::kBlendModeNone:
 		return GetInstance()->particleGraphicsPipelineState_[kBlendModeNone].Get();
 		break;
@@ -81,8 +75,7 @@ ID3D12PipelineState* cPipelineStateObject::GetParticlePipelineState(Blendmode bl
 	}
 }
 
-void cPipelineStateObject::Create3DModelRootSignature()
-{
+void cPipelineStateObject::Create3DModelRootSignature() {
 	HRESULT hr = S_FALSE;
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
@@ -136,8 +129,7 @@ void cPipelineStateObject::Create3DModelRootSignature()
 	ID3DBlob* errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		cLog::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
@@ -148,8 +140,7 @@ void cPipelineStateObject::Create3DModelRootSignature()
 	assert(SUCCEEDED(hr));
 }
 
-void cPipelineStateObject::CreateParticleRootSignature()
-{
+void cPipelineStateObject::CreateParticleRootSignature() {
 	HRESULT hr = S_FALSE;
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
@@ -200,8 +191,7 @@ void cPipelineStateObject::CreateParticleRootSignature()
 	ID3DBlob* errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		cLog::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
@@ -212,8 +202,7 @@ void cPipelineStateObject::CreateParticleRootSignature()
 	assert(SUCCEEDED(hr));
 }
 
-D3D12_INPUT_LAYOUT_DESC cPipelineStateObject::InputLayoutSetting()
-{
+D3D12_INPUT_LAYOUT_DESC cPipelineStateObject::InputLayoutSetting() {
 	// InputLayout
 	static D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
@@ -239,11 +228,9 @@ D3D12_INPUT_LAYOUT_DESC cPipelineStateObject::InputLayoutSetting()
 	return inputLayoutDesc;
 }
 
-D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting(uint32_t blendModeNum)
-{
+D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting(uint32_t blendModeNum) {
 	D3D12_BLEND_DESC blendDesc{};
-	switch (blendModeNum)
-	{
+	switch (blendModeNum) {
 	case 0:// kBlendModeNone
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		break;
@@ -311,8 +298,7 @@ D3D12_BLEND_DESC cPipelineStateObject::BlendStateSetting(uint32_t blendModeNum)
 	return blendDesc;
 }
 
-D3D12_RASTERIZER_DESC cPipelineStateObject::RasterizerStateSetting()
-{
+D3D12_RASTERIZER_DESC cPipelineStateObject::RasterizerStateSetting() {
 	//RasterizerStateの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc_{};
 	//裏側(時計回り)を表示しない
@@ -323,8 +309,7 @@ D3D12_RASTERIZER_DESC cPipelineStateObject::RasterizerStateSetting()
 	return rasterizerDesc_;
 }
 
-D3D12_DEPTH_STENCIL_DESC cPipelineStateObject::DepthStecilDescSetting()
-{
+D3D12_DEPTH_STENCIL_DESC cPipelineStateObject::DepthStecilDescSetting3DModel() {
 	/*DepthStencilStateの設定*/
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 	/*Depthの機能を有効化する*/
@@ -337,9 +322,21 @@ D3D12_DEPTH_STENCIL_DESC cPipelineStateObject::DepthStecilDescSetting()
 	return depthStencilDesc;
 }
 
+D3D12_DEPTH_STENCIL_DESC cPipelineStateObject::DepthStecilDescSettingParticle() {
+	/*DepthStencilStateの設定*/
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	/*Depthの機能を有効化する*/
+	depthStencilDesc.DepthEnable = true;
+	// Depthの書き込みを行わない
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	/*比較関数はLessEqual*/
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-void cPipelineStateObject::CompileShaders()
-{
+	return depthStencilDesc;
+}
+
+
+void cPipelineStateObject::CompileShaders() {
 	HRESULT hr = S_FALSE;
 	//dxCompilerを初期化
 	IDxcUtils* dxcUtils = nullptr;
@@ -379,8 +376,7 @@ void cPipelineStateObject::CompileShaders()
 
 }
 
-void cPipelineStateObject::Create3DModelPipelineStateObject()
-{
+void cPipelineStateObject::Create3DModelPipelineStateObject() {
 	HRESULT hr;
 
 	assert(model3DRootSignature_);
@@ -405,12 +401,11 @@ void cPipelineStateObject::Create3DModelPipelineStateObject()
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	/*DepthStencilの設定*/
-	graphicsPipelineStateDesc.DepthStencilState = DepthStecilDescSetting();
+	graphicsPipelineStateDesc.DepthStencilState = DepthStecilDescSetting3DModel();
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	//実際に生成
-	for (uint32_t i = 0; i < kBlendModeNum; i++)
-	{
+	for (uint32_t i = 0; i < kBlendModeNum; i++) {
 		graphicsPipelineStateDesc.BlendState = BlendStateSetting(i);
 		model3DGraphicsPipelineState_[i] = nullptr;
 		hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
@@ -420,8 +415,7 @@ void cPipelineStateObject::Create3DModelPipelineStateObject()
 
 }
 
-void cPipelineStateObject::CreateParticlePipelineStateObject()
-{
+void cPipelineStateObject::CreateParticlePipelineStateObject() {
 	HRESULT hr;
 
 	assert(particleRootSignature_);
@@ -446,12 +440,11 @@ void cPipelineStateObject::CreateParticlePipelineStateObject()
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	/*DepthStencilの設定*/
-	graphicsPipelineStateDesc.DepthStencilState = DepthStecilDescSetting();
+	graphicsPipelineStateDesc.DepthStencilState = DepthStecilDescSettingParticle();
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	//実際に生成
-	for (uint32_t i = 0; i < kBlendModeNum; i++)
-	{
+	for (uint32_t i = 0; i < kBlendModeNum; i++) {
 		graphicsPipelineStateDesc.BlendState = BlendStateSetting(i);
 		particleGraphicsPipelineState_[i] = nullptr;
 		hr = cDirectXCommon::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
@@ -461,8 +454,7 @@ void cPipelineStateObject::CreateParticlePipelineStateObject()
 
 }
 
-Microsoft::WRL::ComPtr<ID3DBlob> cPipelineStateObject::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler)
-{
+Microsoft::WRL::ComPtr<ID3DBlob> cPipelineStateObject::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler) {
 	//これからシェーダーをコンパイルする旨をログに出す
 	cLog::Log(cLog::ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
 	//hlslファイルを読む
@@ -499,8 +491,7 @@ Microsoft::WRL::ComPtr<ID3DBlob> cPipelineStateObject::CompileShader(const std::
 	//警告、エラーが出てたらログに出して止める
 	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0)
-	{
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
 		cLog::Log(shaderError->GetStringPointer());
 		assert(false);
 	}

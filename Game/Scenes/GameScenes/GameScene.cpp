@@ -47,7 +47,7 @@ void cGameScene::Initialize() {
 	particleUVTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	particle_ = new cParticle();
 	particle_->Initialize(viewProjectionMatrix_, &particleUVTransform_);
-	particleTextureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
+	particleTextureHandle_ = cTextureManager::Load("Game/Resources/circle.png");
 
 }
 
@@ -63,7 +63,7 @@ void cGameScene::Update() {
 
 	if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-		static int currentBlendModeImGui = 0;
+		static int currentBlendModeImGui = 2;
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
 		switch (currentBlendModeImGui) {

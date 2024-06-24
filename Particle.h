@@ -11,6 +11,8 @@ public:
 		sTransform transform;
 		Vector3 velocity;
 		Vector4 color;
+		float lifeTime;
+		float currentTime;
 	};
 
 	struct ParticleForGPU {
@@ -55,10 +57,10 @@ private:
 
 #pragma endregion
 #pragma region Particle
-
+	// Particleの生成
 	Particle MakeNewParticle(std::mt19937& randomEngine);
 	// Particleの移動処理
-	void Move();
+	void Move(uint32_t index);
 
 #pragma endregion
 
@@ -70,7 +72,7 @@ private:
 
 private:/*メンバ変数*/
 
-	static const uint32_t kNumInstance = 10;
+	static const uint32_t kNumMaxInstance = 10;
 
 #pragma region モデル
 	/*モデルデータを受け取る箱*/
@@ -117,13 +119,14 @@ private:/*メンバ変数*/
 
 #pragma region Particle
 	// パーティクル
-	Particle particles[kNumInstance];
+	Particle particles[kNumMaxInstance];
 	// デルタタイムを設定。ひとまず60fps固定
 	const float kDeltaTime = 1.0f / 60.0f;
 #pragma endregion
 
 	// instance描画する際に使う変数
-	const uint32_t instanceCount_ = kNumInstance;
+	uint32_t instanceCount_ = kNumMaxInstance;
+
 	// srvGpuハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
 };

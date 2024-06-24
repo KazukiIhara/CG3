@@ -24,7 +24,8 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
 	modelData_.material.enbleLighting = false;
 
-	for (uint32_t index = 0; index < instanceCount_; ++index) {
+	// パーティクルの生成
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
 		particles[index] = MakeNewParticle(randomEngine);
 	}
 
@@ -57,7 +58,9 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 #pragma endregion
 
 #pragma region Instancing
+	// Instancingリソースを作る
 	CreateInstancingResource();
+	// Instancingデータを書き込む
 	MapInstancingData();
 
 #pragma endregion
@@ -66,17 +69,36 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 }
 
 void cParticle::Update() {
+	// 描画すべきインスタンス数
+	instanceCount_ = 0;
+
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
+		// 生存時間を過ぎていたら更新せず描画対象にしない
+		if (particles[index].lifeTime <= particles[index].currentTime) {
+			continue;
+		}
 
 
-	Move();
-	/*WVPマトリックスを作る*/
-	for (uint32_t index = 0; index < instanceCount_; ++index) {
+		// WVPマトリックスを求める
 		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-		instancingData_[index].WVP = worldViewProjectionMatrix;
-		instancingData_[index].World = worldMatrix;
-		instancingData_[index].color = particles[index].color;
+		// 移動
+		Move(index);
+		// 経過時間を足す
+		particles[index].currentTime += kDeltaTime;
+		// 透明度
+		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
+
+		instancingData_[instanceCount_].WVP = worldViewProjectionMatrix;
+		instancingData_[instanceCount_].World = worldMatrix;
+		instancingData_[instanceCount_].color.x = particles[index].color.x;
+		instancingData_[instanceCount_].color.y = particles[index].color.y;
+		instancingData_[instanceCount_].color.z = particles[index].color.z;
+		instancingData_[instanceCount_].color.w = alpha;
+
+		// 生きているParticleの数を1つカウントする
+		instanceCount_++;
 	}
 
 	// 色を書き込む
@@ -158,22 +180,26 @@ void cParticle::MapMaterialData() {
 
 void cParticle::CreateInstancingResource() {
 	// instancing用のリソースを作る
-	instancingResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(ParticleForGPU) * kNumInstance);
+	instancingResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(ParticleForGPU) * kNumMaxInstance);
 }
 
 void cParticle::MapInstancingData() {
 	instancingData_ = nullptr;
 	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 
-	for (uint32_t index = 0; index < kNumInstance; ++index) {
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index) {
 
 		instancingData_[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
 cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
+	// 出現位置と移動量の乱数の生成
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	// 色を決める乱数の生成
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	// 生存時間の乱数の生成(1秒から3秒の間生存)
+	std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
 
 	Particle particle;
 	// トランスフォームの設定
@@ -186,13 +212,15 @@ cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
 	// 色の設定
 	particle.color = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f };
 
+	// 生存時間の設定
+	particle.lifeTime = distTime(randomEngine);
+	particle.currentTime = 0;
+
 	return particle;
 }
 
-void cParticle::Move() {
-	for (uint32_t index = 0; index < kNumInstance; ++index) {
-		particles[index].transform.translate += Multiply(kDeltaTime, particles[index].velocity);
-	}
+void cParticle::Move(uint32_t index) {
+	particles[index].transform.translate += Multiply(kDeltaTime, particles[index].velocity);
 }
 
 void cParticle::CreateSRV() {
@@ -202,7 +230,7 @@ void cParticle::CreateSRV() {
 	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	instancingSrvDesc.Buffer.FirstElement = 0;
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	instancingSrvDesc.Buffer.NumElements = instanceCount_;
+	instancingSrvDesc.Buffer.NumElements = kNumMaxInstance;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU = cDirectXCommon::GetCPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
 	instancingSrvHandleGPU = cDirectXCommon::GetGPUDescriptorHandle(cDirectXCommon::GetSRVDescriptorHeap(), cDirectXCommon::GetDescriptorSizeSRV(), 1);
