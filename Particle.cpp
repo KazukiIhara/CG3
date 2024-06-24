@@ -2,7 +2,6 @@
 #include <fstream>
 #include "Particle.h"
 #include "TextureManager.h"
-#include <random>
 
 void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 
@@ -27,15 +26,7 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	modelData_.material.enbleLighting = false;
 
 	for (uint32_t index = 0; index < instanceCount_; ++index) {
-		std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
-
-		// トランスフォームの設定
-		particles[index].transform.scale = { 1.0f,1.0f,1.0f };
-		particles[index].transform.rotate = { 0.0f,0.0f,0.0f };
-		// 位置と移動量を[-1,1]の範囲でランダムに初期化
-		particles[index].transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-		// 移動量の設定
-		particles[index].velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+		particles[index] = MakeNewParticle(randomEngine);
 	}
 
 	uvTransform_ = uvTransform;
@@ -181,6 +172,20 @@ void cParticle::MapWVPData() {
 		transformationData_[index].WVP = MakeIdentity4x4();
 		transformationData_[index].World = MakeIdentity4x4();
 	}
+}
+
+cParticle::Particle cParticle::MakeNewParticle(std::mt19937& randomEngine) {
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	Particle particle;
+	// トランスフォームの設定
+	particle.transform.scale = { 1.0f,1.0f,1.0f };
+	particle.transform.rotate = { 0.0f,0.0f,0.0f };
+	// 位置と移動量を[-1,1]の範囲でランダムに初期化
+	particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+	// 移動量の設定
+	particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+
+	return particle;
 }
 
 void cParticle::Move() {

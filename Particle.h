@@ -3,9 +3,14 @@
 #include <memory>
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
-
+#include <random>
 class cParticle {
 public:
+	struct Particle {
+		sTransform transform;
+		Vector3 velocity;
+	};
+
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
@@ -45,12 +50,11 @@ private:
 #pragma endregion
 #pragma region Particle
 
+	Particle MakeNewParticle(std::mt19937& randomEngine);
 	// Particleの移動処理
 	void Move();
 
 #pragma endregion
-
-
 
 	// instancingSrvを作る
 	void CreateSRV();
@@ -59,11 +63,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 private:/*メンバ変数*/
-
-	struct Particle {
-		sTransform transform;
-		Vector3 velocity;
-	};
 
 	static const uint32_t kNumInstance = 10;
 
