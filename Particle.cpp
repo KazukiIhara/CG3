@@ -79,15 +79,22 @@ void cParticle::Update() {
 			continue;
 		}
 
+		// 180度回す回転行列を作成する
+		Matrix4x4 backFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
 
 		// WVPマトリックスを求める
-		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
+		Matrix4x4 scaleMatrix = MakeScaleMatrix(particles[index].transform.scale);
+		Matrix4x4 billboardMatrix = MakeRotateXYZMatrixRad(particles[index].transform.rotate);
+		Matrix4x4 translateMatrix = MakeTranslateMatrix(particles[index].transform.translate);
+
+		Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;
+
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
 		// 移動
-		Move(index);
+		//Move(index);
 		// 経過時間を足す
-		particles[index].currentTime += kDeltaTime;
+		//particles[index].currentTime += kDeltaTime;
 		// 透明度
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
 
