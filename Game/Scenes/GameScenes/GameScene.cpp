@@ -120,7 +120,7 @@ void cGameScene::Update() {
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
-	particle_->Update();
+	particle_->Update(*mainCamera_->GetWorldMatrix());
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
 	imgui_->EndFrame();

@@ -69,7 +69,7 @@ void cParticle::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
 	CreateSRV();
 }
 
-void cParticle::Update() {
+void cParticle::Update(const Matrix4x4& cameraMatrix) {
 	// 描画すべきインスタンス数
 	instanceCount_ = 0;
 
@@ -84,7 +84,12 @@ void cParticle::Update() {
 
 		// WVPマトリックスを求める
 		Matrix4x4 scaleMatrix = MakeScaleMatrix(particles[index].transform.scale);
-		Matrix4x4 billboardMatrix = MakeRotateXYZMatrixRad(particles[index].transform.rotate);
+		Matrix4x4 billboardMatrix = backFrontMatrix * cameraMatrix;
+		// 平行移動成分を削除
+		billboardMatrix.m[3][0] = 0.0f;
+		billboardMatrix.m[3][1] = 0.0f;
+		billboardMatrix.m[3][2] = 0.0f;
+
 		Matrix4x4 translateMatrix = MakeTranslateMatrix(particles[index].transform.translate);
 
 		Matrix4x4 worldMatrix = scaleMatrix * billboardMatrix * translateMatrix;

@@ -22,7 +22,7 @@ public:
 	};
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
-	void Update();
+	void Update(const Matrix4x4& cameraMatrix);
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
 private:
