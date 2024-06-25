@@ -113,11 +113,11 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 		float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
 		if (isMove) {
-			// 移動
-			(*particleIterator).transform.translate += Multiply(kDeltaTime, (*particleIterator).velocity);
-			// 経過時間を足す
-			(*particleIterator).currentTime += kDeltaTime;
 		}
+		// 移動
+		(*particleIterator).transform.translate += Multiply(kDeltaTime, (*particleIterator).velocity);
+		// 経過時間を足す
+		(*particleIterator).currentTime += kDeltaTime;
 
 		if (instanceCount_ < kNumMaxInstance) {
 			// 180度回す回転行列を作成する
