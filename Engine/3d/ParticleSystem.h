@@ -152,9 +152,9 @@ private:/*メンバ変数*/
 #pragma endregion
 #pragma region Field
 
+	AccelerationField accelerationField;
+
 #pragma endregion
-
-
 
 	// instance描画する際に使う変数
 	uint32_t instanceCount_ = kNumMaxInstance;
@@ -165,6 +165,6 @@ private:/*メンバ変数*/
 	/// 
 	/// for Debug
 	/// 
-	bool isMove = false;
+	bool isUpdate = false;
 	bool isUseBillboard = false;
 };

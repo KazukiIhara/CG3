@@ -2,7 +2,7 @@
 #include <fstream>
 #include "ParticleSystem.h"
 #include "TextureManager.h"
-#include "MathOperator.h"
+#include "Collision.h"
 #include "ImGuiManager.h"
 
 void cParticleSystem::Initialize(Matrix4x4* viewProjection, sTransform* uvTransform) {
@@ -10,6 +10,11 @@ void cParticleSystem::Initialize(Matrix4x4* viewProjection, sTransform* uvTransf
 	// 乱数生成器の初期化
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
+
+	// AccelerationFieldの設定
+	accelerationField.acceleration = { 15.0f,0.0f,0.0f };
+	accelerationField.area.min = { -1.0f,-1.0f,-1.0f };
+	accelerationField.area.max = { 1.0f,1.0f,1.0f };
 
 	// エミッターのトランフォーム設定
 	emitter_.transform.translate = { 0.0f,0.0f,0.0f };
@@ -73,7 +78,7 @@ void cParticleSystem::Initialize(Matrix4x4* viewProjection, sTransform* uvTransf
 void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 
 	ImGui::Checkbox("isUseBillboard", &isUseBillboard);
-	ImGui::Checkbox("isMove", &isMove);
+	ImGui::Checkbox("Update", &isUpdate);
 	ImGui::DragFloat3("EmitterTranslate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.0f);
 
 
@@ -109,15 +114,21 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 			continue;
 		}
 
-		// 透明度
-		float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+		bool flag = cCollision::IsCollision(accelerationField.area, (*particleIterator).transform.translate);
 
-		if (isMove) {
+		// もしフラグが立っていればFieldの範囲内のParticleには加速度を適用する
+		if (isUpdate) {
+			if (cCollision::IsCollision(accelerationField.area, (*particleIterator).transform.translate)) {
+				(*particleIterator).velocity += accelerationField.acceleration * kDeltaTime;
+			}
 		}
-		// 移動
-		(*particleIterator).transform.translate += Multiply(kDeltaTime, (*particleIterator).velocity);
+
 		// 経過時間を足す
 		(*particleIterator).currentTime += kDeltaTime;
+		// 移動
+		(*particleIterator).transform.translate += Multiply(kDeltaTime, (*particleIterator).velocity);
+		// 透明度
+		float alpha = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
 		if (instanceCount_ < kNumMaxInstance) {
 			// 180度回す回転行列を作成する
