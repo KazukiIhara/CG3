@@ -7,6 +7,7 @@
 #include <iostream>
 #include <list>
 #include <algorithm>
+#include "Collision.h"
 
 class cParticleSystem {
 public:
@@ -29,6 +30,11 @@ public:
 		uint32_t count;			// 発生数
 		float frequency;		// 発生頻度
 		float frequencyTime;	// 頻度用時刻
+	};
+
+	struct AccelerationField {
+		Vector3 acceleration;	// 加速度
+		cCollision::AABB area;	// 範囲
 	};
 
 	void Initialize(Matrix4x4* viewProjection, sTransform* uvTransform);
@@ -144,6 +150,11 @@ private:/*メンバ変数*/
 	.frequencyTime = 0.0f,	// 発生頻度用の時刻、0で初期化
 	};
 #pragma endregion
+#pragma region Field
+
+	AccelerationField accelerationField;
+
+#pragma endregion
 
 	// instance描画する際に使う変数
 	uint32_t instanceCount_ = kNumMaxInstance;
@@ -154,6 +165,6 @@ private:/*メンバ変数*/
 	/// 
 	/// for Debug
 	/// 
-	bool isMove = false;
+	bool isUpdate = false;
 	bool isUseBillboard = false;
 };
