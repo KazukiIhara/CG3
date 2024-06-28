@@ -9,7 +9,7 @@
 
 class cSphere {
 public:
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition);
 	void Update();
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
@@ -52,6 +52,10 @@ private:/*メンバ関数*/
 	void CreateDirectionalLightResource();
 	void MapDirectionalLightData();
 #pragma endregion	
+
+	void CreateCameraPositionResource();
+	void MapCameraPositionData();
+
 
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
@@ -104,6 +108,14 @@ private:/*メンバ変数*/
 	/*ライトを受け取る箱*/
 	DirectionalLight* directionalLight_;
 #pragma endregion
+
+	// カメラのポジションのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraPositionResource_;
+
+	// ポジションデータ
+	CameraForGPU* cameraPositionData_;
+
+	Vector3* cameraPosition_;
 
 private:/*メンバ定数*/
 

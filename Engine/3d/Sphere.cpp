@@ -4,19 +4,21 @@
 #include "TextureManager.h"
 #include <numbers>
 
-void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform) {
+void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition) {
 	/*NullCheck*/
 	assert(transform);
 	assert(uvTransform);
 	assert(viewProjection);
 	assert(material);
 	assert(light);
+	assert(cameraPosition);
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
 	material_ = material;
 	directionalLight_ = light;
+	cameraPosition_ = cameraPosition;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -54,7 +56,8 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 	CreateDirectionalLightResource();
 	MapDirectionalLightData();
 #pragma endregion
-
+	CreateCameraPositionResource();
+	MapCameraPositionData();
 }
 
 void cSphere::Update() {
@@ -67,6 +70,7 @@ void cSphere::Update() {
 
 	materialData_->color = material_->color;
 	materialData_->enbleLighting = material_->enbleLighting;
+	materialData_->shininess = material_->shininess;
 
 	/*uvTranform用のMatrixを作る*/
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
@@ -77,6 +81,10 @@ void cSphere::Update() {
 	directionalLightData_->color = directionalLight_->color;
 	directionalLightData_->direction = directionalLight_->direction;
 	directionalLightData_->intensity = directionalLight_->intensity;
+
+	cameraPositionData_->worldPosition.x = cameraPosition_->x;
+	cameraPositionData_->worldPosition.y = cameraPosition_->y;
+	cameraPositionData_->worldPosition.z = cameraPosition_->z;
 }
 
 void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
@@ -97,6 +105,8 @@ void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blend
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[textureHandle].gpuDescHandleSRV);
 	/*DirectionalLight*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
+	// cameraPosition
+	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawIndexedInstanced(sphereIndexNum, 1, 0, 0, 0);
 
@@ -230,6 +240,8 @@ void cSphere::MapMaterialData() {
 	materialData_->enbleLighting = material_->enbleLighting;
 	/*uvTransformMatrix*/
 	materialData_->uvTransformMatrix = MakeIdentity4x4();
+	// 光沢度を書き込む
+	materialData_->shininess = material_->shininess;
 }
 
 void cSphere::CreateWVPResource() {
@@ -261,7 +273,19 @@ void cSphere::MapDirectionalLightData() {
 	directionalLightData_->color = directionalLight_->color;
 	directionalLightData_->direction = directionalLight_->direction;
 	directionalLightData_->intensity = directionalLight_->intensity;
+}
 
+void cSphere::CreateCameraPositionResource() {
+
+	cameraPositionResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(CameraForGPU));
+}
+
+void cSphere::MapCameraPositionData() {
+	cameraPositionData_ = nullptr;
+	cameraPositionResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraPositionData_));
+	cameraPositionData_->worldPosition.x = cameraPosition_->x;
+	cameraPositionData_->worldPosition.y = cameraPosition_->y;
+	cameraPositionData_->worldPosition.z = cameraPosition_->z;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

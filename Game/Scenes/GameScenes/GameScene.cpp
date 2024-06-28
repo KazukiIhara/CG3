@@ -46,11 +46,12 @@ void cGameScene::Initialize() {
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	material_.enbleLighting = true;
+	material_.shininess = 40.0f;
 
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	sphere_ = new cSphere();
-	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &light, &uvTransform_);
+	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &light, &uvTransform_, &cameraTransform_.translate);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
 }
@@ -136,6 +137,7 @@ void cGameScene::Draw() {
 	///
 	/// 描画処理ここから
 	/// 
+
 
 	sphere_->Draw(textureHandle_, blendMode_);
 

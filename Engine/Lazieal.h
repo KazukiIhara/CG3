@@ -38,6 +38,7 @@ struct Material {
 	int32_t enbleLighting;
 	float padding[3];
 	Matrix4x4 uvTransformMatrix;
+	float shininess;
 };
 
 struct TransformationMatrix {
