@@ -5,13 +5,13 @@
 #include <memory>
 #include "Lazieal.h"
 #include "externals/DirectXTex/DirectXTex.h"
+#include "PipelineStateObject.h"
 
-class cSphere
-{
+class cSphere {
 public:
 	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform);
 	void Update();
-	void Draw(uint32_t textureHandle);
+	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
 private:/*メンバ関数*/
 

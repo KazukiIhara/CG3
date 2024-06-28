@@ -4,8 +4,7 @@
 #include "TextureManager.h"
 #include <numbers>
 
-void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform)
-{
+void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform) {
 	/*NullCheck*/
 	assert(transform);
 	assert(uvTransform);
@@ -58,8 +57,7 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 
 }
 
-void cSphere::Update()
-{
+void cSphere::Update() {
 	/*WVPマトリックスを作る*/
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_->scale, transform_->rotate, transform_->translate);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
@@ -74,15 +72,17 @@ void cSphere::Update()
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	materialData_->uvTransformMatrix = uvTransformMatrix;
 
 	directionalLightData_->color = directionalLight_->color;
 	directionalLightData_->direction = directionalLight_->direction;
 	directionalLightData_->intensity = directionalLight_->intensity;
 }
 
-void cSphere::Draw(uint32_t textureHandle)
-{
+void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
+	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
+	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::Get3DModelRootSignature());
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::Get3DModelPipelineState(blendMode));//PSOを設定
 	//VBVを設定
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	/*IBVの設定*/
@@ -102,13 +102,11 @@ void cSphere::Draw(uint32_t textureHandle)
 
 }
 
-void cSphere::CreateVertexResource()
-{
+void cSphere::CreateVertexResource() {
 	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * sphereVertexNum);
 }
 
-void cSphere::CreateVretexBufferView()
-{
+void cSphere::CreateVretexBufferView() {
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
@@ -117,8 +115,7 @@ void cSphere::CreateVretexBufferView()
 	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
 }
 
-void cSphere::MapVertexData()
-{
+void cSphere::MapVertexData() {
 	//頂点リソースにデータを書き込む
 	vertexData = nullptr;
 
@@ -131,12 +128,10 @@ void cSphere::MapVertexData()
 	//緯度分割1つ分の角度
 	const float kLatEvery = std::numbers::pi_v<float> / float(kSubdivision);
 	//緯度の方向に分割
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex)
-	{
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex;//Θ
 		//経度の方向に分割しながら線を描く
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex)
-		{
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			uint32_t start = (latIndex * kSubdivision + lonIndex) * 4;
 			float lon = lonIndex * kLonEvery;//φ
 			//頂点にデータを入力する
@@ -188,14 +183,12 @@ void cSphere::MapVertexData()
 	}
 }
 
-void cSphere::CreateIndexResource()
-{
+void cSphere::CreateIndexResource() {
 	/*インデックスリソースを作る*/
 	indexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(uint32_t) * sphereIndexNum);
 }
 
-void cSphere::CreateIndexBufferView()
-{
+void cSphere::CreateIndexBufferView() {
 	//リソースの先頭のアドレスから使う
 	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズはインデックス6つ分のサイズ
@@ -204,18 +197,15 @@ void cSphere::CreateIndexBufferView()
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 }
 
-void cSphere::MapIndexResource()
-{
+void cSphere::MapIndexResource() {
 	//データを書き込む
 	indexData_ = nullptr;
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
 
 	//緯度の方向に分割
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex)
-	{
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		//経度の方向に分割
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex)
-		{
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			uint32_t dataStart = (latIndex * kSubdivision + lonIndex) * 4;
 			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			indexData_[start] = dataStart;	indexData_[start + 1] = dataStart + 1;	indexData_[start + 2] = dataStart + 2;
@@ -224,14 +214,12 @@ void cSphere::MapIndexResource()
 	}
 }
 
-void cSphere::CreateMaterialResource()
-{
+void cSphere::CreateMaterialResource() {
 	//マテリアル用のリソースを作る。
 	materialResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Material));
 }
 
-void cSphere::MapMaterialData()
-{
+void cSphere::MapMaterialData() {
 	//マテリアルにデータを書き込む
 	materialData_ = nullptr;
 	//書き込むためのアドレスを取得
@@ -240,18 +228,16 @@ void cSphere::MapMaterialData()
 	materialData_->color = material_->color;//RGBA
 	//Lightingを有効にする
 	materialData_->enbleLighting = material_->enbleLighting;
-	/*uvTransform*/
-	materialData_->uvTransform = MakeIdentity4x4();
+	/*uvTransformMatrix*/
+	materialData_->uvTransformMatrix = MakeIdentity4x4();
 }
 
-void cSphere::CreateWVPResource()
-{
+void cSphere::CreateWVPResource() {
 	/*WVP用のリソースを作る*/
 	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix));
 }
 
-void cSphere::MapWVPData()
-{
+void cSphere::MapWVPData() {
 	/*データを書き込む*/
 	transformationData_ = nullptr;
 	/*書き込むためのアドレスを取得*/
@@ -261,14 +247,12 @@ void cSphere::MapWVPData()
 	transformationData_->World = MakeIdentity4x4();
 }
 
-void cSphere::CreateDirectionalLightResource()
-{
+void cSphere::CreateDirectionalLightResource() {
 	//平行光源用のResourceを作成する
 	directionalLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(DirectionalLight));
 }
 
-void cSphere::MapDirectionalLightData()
-{
+void cSphere::MapDirectionalLightData() {
 	//データを書き込む
 	directionalLightData_ = nullptr;
 	//書き込むためのアドレスを取得
@@ -280,8 +264,7 @@ void cSphere::MapDirectionalLightData()
 
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes)
-{
+Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	HRESULT hr = S_FALSE;
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uplodeHeapProperties{};

@@ -65,7 +65,7 @@ void cSprite::Update()
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	materialData_->uvTransformMatrix = uvTransformMatrix;
 }
 
 void cSprite::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode)
@@ -165,7 +165,7 @@ void cSprite::MapMaterialData()
 	/*マテリアルデータを書き込む*/
 	materialData_->color = material_->color;
 	materialData_->enbleLighting = false;
-	materialData_->uvTransform = MakeIdentity4x4();
+	materialData_->uvTransformMatrix = MakeIdentity4x4();
 }
 
 void cSprite::CreateWVPResource()

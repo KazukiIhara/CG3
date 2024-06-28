@@ -174,7 +174,7 @@ void cParticleSystem::Update(const Matrix4x4& cameraMatrix) {
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	materialData_->uvTransformMatrix = uvTransformMatrix;
 
 }
 
@@ -241,8 +241,8 @@ void cParticleSystem::MapMaterialData() {
 	materialData_->color = modelData_.material.color;
 	// Lightingを有効にする
 	materialData_->enbleLighting = false;
-	// uvTransform
-	materialData_->uvTransform = MakeIdentity4x4();
+	// uvTransformMatrix
+	materialData_->uvTransformMatrix = MakeIdentity4x4();
 }
 
 void cParticleSystem::CreateInstancingResource() {

@@ -14,8 +14,7 @@ class cSprite;
 class cSphere;
 class cParticleSystem;
 
-class cGameScene :public cBaseScene
-{
+class cGameScene :public cBaseScene {
 public:
 	cGameScene();
 	~cGameScene()override;
@@ -59,13 +58,14 @@ private:
 	/*光源*/
 	DirectionalLight light{};
 
-	/*パーティクル用変数*/
-	/*パーティクル用のTexture*/
-	uint32_t particleTextureHandle_;
-	/*パーティクルのトランスフォーム*/
-	sTransform particleUVTransform_;
-	/*パーティクル(本人)*/
-	cParticleSystem* particle_{};
+	sTransform transform_;
+	sTransform uvTransform_;
+	// スフィア
+	cSphere* sphere_{};
+
+	Material material_{};
+
+	uint32_t textureHandle_;
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };
