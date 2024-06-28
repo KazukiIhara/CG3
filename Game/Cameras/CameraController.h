@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Lazieal.h"
+#include <memory>
+#include "DirectXCommon.h"
 
 class cCameraController {
 public:
@@ -25,6 +27,7 @@ public:
 	Matrix4x4* GetWorldMatrix() {
 		return &worldMatrix_;
 	}
+
 private:
 
 	/*カメラのトランスフォームを受け取る箱*/
@@ -37,4 +40,3 @@ private:
 	Matrix4x4 viewProjectionMatrix_;
 
 };
-

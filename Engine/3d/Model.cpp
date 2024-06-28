@@ -76,7 +76,7 @@ void cModel::Update()
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	materialData_->uvTransformMatrix = uvTransformMatrix;
 
 	directionalLightData_->color = directionalLight_->color;
 	directionalLightData_->direction = directionalLight_->direction;
@@ -238,8 +238,8 @@ void cModel::MapMaterialData()
 	materialData_->color = modelData.material.color;
 	// Lightingを有効にする
 	materialData_->enbleLighting = true;
-	// uvTransform
-	materialData_->uvTransform = MakeIdentity4x4();
+	// uvTransformMatrix
+	materialData_->uvTransformMatrix = MakeIdentity4x4();
 }
 
 void cModel::CreateWVPResource()

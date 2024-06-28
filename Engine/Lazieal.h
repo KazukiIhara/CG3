@@ -13,53 +13,46 @@
 
 /*---構造体---*/
 
-struct Matrix2x2
-{
+struct Matrix2x2 {
 	float m[2][2];
 };
 
-struct Matrix3x3
-{
+struct Matrix3x3 {
 	float m[3][3];
 };
 
-struct sTransform
-{
+struct sTransform {
 	Vector3 scale;
 	Vector3 rotate;
 	Vector3 translate;
 };
 
-struct sVertexData
-{
+struct sVertexData {
 	Vector4 position;
 	Vector2 texcoord;
 	Vector3 normal;
 };
 
-struct Material
-{
+struct Material {
 	Vector4 color;
 	int32_t enbleLighting;
 	float padding[3];
-	Matrix4x4 uvTransform;
+	Matrix4x4 uvTransformMatrix;
+	float shininess;
 };
 
-struct TransformationMatrix
-{
+struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 };
 
-struct DirectionalLight
-{
+struct DirectionalLight {
 	Vector4 color;//ライトの色
 	Vector3 direction;//ライトの向き
 	float intensity;//輝度
 };
 
-struct MaterialData
-{
+struct MaterialData {
 	std::string textureFilePath;
 	uint32_t textureHandle;
 	Vector4 color;
@@ -67,10 +60,13 @@ struct MaterialData
 };
 
 
-struct ModelData
-{
+struct ModelData {
 	std::vector<sVertexData> vertices;
 	MaterialData material;
+};
+
+struct CameraForGPU {
+	Vector3 worldPosition;
 };
 
 
