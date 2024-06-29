@@ -67,6 +67,7 @@ void cSphere::Update() {
 
 	transformationData_->WVP = worldViewProjectionMatrix;
 	transformationData_->World = worldMatrix;
+	transformationData_->WorldInverseTransepose;
 
 	materialData_->color = material_->color;
 	materialData_->enbleLighting = material_->enbleLighting;
@@ -257,6 +258,7 @@ void cSphere::MapWVPData() {
 	/*単位行列を書き込んでおく*/
 	transformationData_->WVP = MakeIdentity4x4();
 	transformationData_->World = MakeIdentity4x4();
+	transformationData_->WorldInverseTransepose = MakeIdentity4x4();
 }
 
 void cSphere::CreateDirectionalLightResource() {

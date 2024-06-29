@@ -111,6 +111,14 @@ void cGameScene::Update() {
 		ImGui::TreePop();
 	}
 
+	if (ImGui::TreeNodeEx("Sphere", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::DragFloat3("Scale", &transform_.scale.x, 0.002f);
+		ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.002f);
+		ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+
+		ImGui::TreePop();
+	}
+
 #pragma endregion
 
 	///
