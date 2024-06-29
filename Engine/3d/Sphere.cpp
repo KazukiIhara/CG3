@@ -64,10 +64,11 @@ void cSphere::Update() {
 	/*WVPマトリックスを作る*/
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_->scale, transform_->rotate, transform_->translate);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
+	Matrix4x4 worldInverseTransposeMatrix = MakeInverseTransposeMatrix(worldMatrix);
 
 	transformationData_->WVP = worldViewProjectionMatrix;
 	transformationData_->World = worldMatrix;
-	transformationData_->WorldInverseTransepose;
+	transformationData_->WorldInverseTransepose = worldInverseTransposeMatrix;
 
 	materialData_->color = material_->color;
 	materialData_->enbleLighting = material_->enbleLighting;
