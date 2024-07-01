@@ -25,6 +25,7 @@ cGameScene::~cGameScene() {
 		/*メインカメラ開放*/
 		delete mainCamera_;
 		delete sphere_;
+		delete terrain_;
 	}
 }
 void cGameScene::Initialize() {
@@ -43,6 +44,10 @@ void cGameScene::Initialize() {
 	light.direction = { 0.0f,-1.0f,0.0f };
 	light.intensity = 1.0f;
 
+	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	pointLight_.intensity = 1.0f;
+	pointLight_.position = { 0.0f,2.0f,0.0f };
+
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	material_.enbleLighting = true;
@@ -51,7 +56,11 @@ void cGameScene::Initialize() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	sphere_ = new cSphere();
-	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &light, &uvTransform_, &cameraTransform_.translate);
+	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &light, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+
+	terrain_ = new cModel();
+	terrain_->LoadObjFile("terrain.obj");
+	terrain_->Initialize(&transform_, viewProjectionMatrix_, &light, &uvTransform_, &cameraTransform_.translate, &pointLight_);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
 }
@@ -129,6 +138,7 @@ void cGameScene::Update() {
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
+	terrain_->Update();
 	sphere_->Update();
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
@@ -146,7 +156,7 @@ void cGameScene::Draw() {
 	/// 描画処理ここから
 	/// 
 
-
+	terrain_->Draw(blendMode_);
 	sphere_->Draw(textureHandle_, blendMode_);
 
 	///

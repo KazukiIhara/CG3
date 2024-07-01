@@ -9,7 +9,7 @@
 
 class cSphere {
 public:
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight);
 	void Update();
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
@@ -52,10 +52,15 @@ private:/*メンバ関数*/
 	void CreateDirectionalLightResource();
 	void MapDirectionalLightData();
 #pragma endregion	
-
+#pragma region CameraPosition
 	void CreateCameraPositionResource();
 	void MapCameraPositionData();
 
+#pragma endregion
+#pragma region PointLight
+	void CreatePointLightResource();
+	void MapPointLightData();
+#pragma endregion
 
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
@@ -108,15 +113,21 @@ private:/*メンバ変数*/
 	/*ライトを受け取る箱*/
 	DirectionalLight* directionalLight_;
 #pragma endregion
-
+#pragma region CameraPosition
 	// カメラのポジションのリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraPositionResource_;
-
 	// ポジションデータ
 	CameraForGPU* cameraPositionData_;
-
 	Vector3* cameraPosition_;
-
+#pragma endregion
+#pragma region PointLight
+	// ポイントライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
+	// ポイントライトデータ
+	PointLight* pointLightData_;
+	// ポイントライトデータを受け取る箱
+	PointLight* pointLight_;
+#pragma endregion
 private:/*メンバ定数*/
 
 	/*球の分割数*/
