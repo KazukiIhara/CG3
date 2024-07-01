@@ -52,10 +52,10 @@ PixelShaderOutput main(VertexShaderOutput input)
         // 拡散反射
         // DirectionalLight
         float32_t3 diffuseDirectionalLight =
-        gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cosSpotLight * gDirectionalLight.intensity;
+        gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         // PointLight
         float32_t3 diffusePointLight =
-        gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * pointLightDirection * gPointLight.intensity;
+        gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosSpotLight * gPointLight.intensity;
         // 鏡面反射
         // DirectionalLight
         float32_t3 specularDirectionalLight = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
