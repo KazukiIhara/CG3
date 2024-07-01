@@ -29,6 +29,8 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     // PointLight
     float32_t3 pointLightDirection = normalize(input.worldPosition - gPointLight.position);
+    float32_t distance = length(gPointLight.position - input.worldPosition);
+    float32_t factor = 1.0f / (distance * distance);
     float32_t3 reflectPointLight = reflect(pointLightDirection, normalize(input.normal));
     float RdotEPoint = dot(reflectPointLight, toEye);
     float32_t3 halfVectorPointLight = normalize(-pointLightDirection + toEye);
@@ -55,12 +57,12 @@ PixelShaderOutput main(VertexShaderOutput input)
         gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         // PointLight
         float32_t3 diffusePointLight =
-        gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosSpotLight * gPointLight.intensity;
+        gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosSpotLight * gPointLight.intensity * factor;
         // 鏡面反射
         // DirectionalLight
         float32_t3 specularDirectionalLight = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
         // PointLight
-        float32_t3 specularPointLight = gPointLight.color.rgb * gPointLight.intensity * specularPowPointLight * float32_t3(1.0f, 1.0f, 1.0f);
+        float32_t3 specularPointLight = gPointLight.color.rgb * gPointLight.intensity * factor * specularPowPointLight * float32_t3(1.0f, 1.0f, 1.0f);
         // 拡散反射、鏡面反射
         output.color.rgb = diffuseDirectionalLight + specularDirectionalLight + diffusePointLight + specularPointLight;
         // アルファ値は今まで通り
