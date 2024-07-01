@@ -44,6 +44,7 @@ struct Material {
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
+	Matrix4x4 WorldInverseTransepose;
 };
 
 struct DirectionalLight {
@@ -103,6 +104,7 @@ Matrix4x4 Multiply(const Matrix4x4& a, const Matrix4x4& b);
 Matrix4x4 Inverse(const Matrix4x4& a);
 Matrix4x4 Transpose(const Matrix4x4& a);
 Matrix4x4 MakeIdentity4x4();
+Matrix4x4 MakeInverseTransposeMatrix(const Matrix4x4& a);
 
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 Matrix4x4 MakeScaleMatrix(const Vector3& scale);
