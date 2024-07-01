@@ -92,6 +92,11 @@ void cSphere::Update() {
 	cameraPositionData_->worldPosition.x = cameraPosition_->x;
 	cameraPositionData_->worldPosition.y = cameraPosition_->y;
 	cameraPositionData_->worldPosition.z = cameraPosition_->z;
+
+	pointLightData_->color = pointLight_->color;
+	pointLightData_->intensity = pointLight_->intensity;
+	pointLightData_->position = pointLight_->position;
+
 }
 
 void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {

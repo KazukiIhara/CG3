@@ -81,34 +81,41 @@ void cGameScene::Update() {
 		ImGui::Combo("Texture", &currentBlendModeImGui, BlendMode, IM_ARRAYSIZE(BlendMode));
 
 		switch (currentBlendModeImGui) {
-		case 0:
-			blendMode_ = cPipelineStateObject::kBlendModeNone;
-			break;
-		case 1:
-			blendMode_ = cPipelineStateObject::kBlendModeNormal;
-			break;
-		case 2:
-			blendMode_ = cPipelineStateObject::kBlendModeAdd;
-			break;
-		case 3:
-			blendMode_ = cPipelineStateObject::kBlendModeSubtract;
-			break;
-		case 4:
-			blendMode_ = cPipelineStateObject::kBlendModeMultiply;
-			break;
-		case 5:
-			blendMode_ = cPipelineStateObject::kBlendModeScreen;
-			break;
+			case 0:
+				blendMode_ = cPipelineStateObject::kBlendModeNone;
+				break;
+			case 1:
+				blendMode_ = cPipelineStateObject::kBlendModeNormal;
+				break;
+			case 2:
+				blendMode_ = cPipelineStateObject::kBlendModeAdd;
+				break;
+			case 3:
+				blendMode_ = cPipelineStateObject::kBlendModeSubtract;
+				break;
+			case 4:
+				blendMode_ = cPipelineStateObject::kBlendModeMultiply;
+				break;
+			case 5:
+				blendMode_ = cPipelineStateObject::kBlendModeScreen;
+				break;
 		}
 
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::TreeNodeEx("DirectionalLight", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit3("Color", &light.color.x);
 		ImGui::DragFloat3("Direction", &light.direction.x, 0.002f);
 		ImGui::DragFloat("Intensity", &light.intensity, 0.01f);
 		light.direction = Normalize(light.direction);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNodeEx("PointLight", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::ColorEdit3("Color", &pointLight_.color.x);
+		ImGui::DragFloat3("Position", &pointLight_.position.x, 0.01f);
+		ImGui::DragFloat("Intensity", &pointLight_.intensity, 0.01f);
 		ImGui::TreePop();
 	}
 
