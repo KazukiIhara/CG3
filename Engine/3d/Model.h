@@ -4,6 +4,7 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
+
 class cModel {
 public:
 
@@ -13,7 +14,7 @@ public:
 
 	/*Objファイルからデータを読み取る関数*/
 	void LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
-
+	void LoadObjFileWithAssimp(const std::string& filename, const std::string& directoryPath = "Game/Resources");
 private:
 #pragma region Vertex
 	/*頂点リソースの作成*/
