@@ -96,7 +96,8 @@ void cSphere::Update() {
 	pointLightData_->color = pointLight_->color;
 	pointLightData_->intensity = pointLight_->intensity;
 	pointLightData_->position = pointLight_->position;
-
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
@@ -315,6 +316,8 @@ void cSphere::MapPointLightData() {
 	pointLightData_->color = pointLight_->color;
 	pointLightData_->intensity = pointLight_->intensity;
 	pointLightData_->position = pointLight_->position;
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

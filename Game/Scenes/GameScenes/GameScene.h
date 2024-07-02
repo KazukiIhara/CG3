@@ -56,7 +56,7 @@ private:
 	Matrix4x4* viewProjectionMatrix_{};
 
 	/*光源*/
-	DirectionalLight light{};
+	DirectionalLight directionalLight{};
 	PointLight pointLight_{};
 	sTransform transform_;
 	sTransform uvTransform_;

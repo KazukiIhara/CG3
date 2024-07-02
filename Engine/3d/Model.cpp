@@ -93,6 +93,8 @@ void cModel::Update() {
 	pointLightData_->color = pointLight_->color;
 	pointLightData_->intensity = pointLight_->intensity;
 	pointLightData_->position = pointLight_->position;
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 void cModel::Draw(cPipelineStateObject::Blendmode blendMode) {
@@ -295,6 +297,8 @@ void cModel::MapPointLightData() {
 	pointLightData_->color = pointLight_->color;
 	pointLightData_->intensity = pointLight_->intensity;
 	pointLightData_->position = pointLight_->position;
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 MaterialData cModel::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {

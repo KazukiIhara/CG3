@@ -30,7 +30,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     // PointLight
     float32_t3 pointLightDirection = normalize(input.worldPosition - gPointLight.position);
     float32_t distance = length(gPointLight.position - input.worldPosition);
-    float32_t factor = 1.0f / (distance * distance);
+    float32_t factor = pow(saturate(-distance / gPointLight.radius + 1.0), gPointLight.decay);
     float32_t3 reflectPointLight = reflect(pointLightDirection, normalize(input.normal));
     float RdotEPoint = dot(reflectPointLight, toEye);
     float32_t3 halfVectorPointLight = normalize(-pointLightDirection + toEye);
