@@ -56,8 +56,8 @@ private:
 	Matrix4x4* viewProjectionMatrix_{};
 
 	/*光源*/
-	DirectionalLight light{};
-
+	DirectionalLight directionalLight{};
+	PointLight pointLight_{};
 	sTransform transform_;
 	sTransform uvTransform_;
 	// スフィア
@@ -66,6 +66,11 @@ private:
 	Material material_{};
 
 	uint32_t textureHandle_;
+
+	// モデル
+	cModel* terrain_{};
+
+	Material terrainMaterial_;
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };

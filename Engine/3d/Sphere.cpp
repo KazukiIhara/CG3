@@ -4,7 +4,7 @@
 #include "TextureManager.h"
 #include <numbers>
 
-void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition) {
+void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight) {
 	/*NullCheck*/
 	assert(transform);
 	assert(uvTransform);
@@ -12,6 +12,7 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 	assert(material);
 	assert(light);
 	assert(cameraPosition);
+	assert(pointLight);
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
@@ -19,6 +20,7 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 	material_ = material;
 	directionalLight_ = light;
 	cameraPosition_ = cameraPosition;
+	pointLight_ = pointLight;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -58,6 +60,9 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 #pragma endregion
 	CreateCameraPositionResource();
 	MapCameraPositionData();
+
+	CreatePointLightResource();
+	MapPointLightData();
 }
 
 void cSphere::Update() {
@@ -87,6 +92,12 @@ void cSphere::Update() {
 	cameraPositionData_->worldPosition.x = cameraPosition_->x;
 	cameraPositionData_->worldPosition.y = cameraPosition_->y;
 	cameraPositionData_->worldPosition.z = cameraPosition_->z;
+
+	pointLightData_->color = pointLight_->color;
+	pointLightData_->intensity = pointLight_->intensity;
+	pointLightData_->position = pointLight_->position;
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
@@ -109,6 +120,8 @@ void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blend
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	// cameraPosition
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
+	// pointLight
+	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawIndexedInstanced(sphereIndexNum, 1, 0, 0, 0);
 
@@ -133,7 +146,6 @@ void cSphere::MapVertexData() {
 
 	//書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-
 
 	//経度分割1つ分の角度
 	const float kLonEvery = std::numbers::pi_v<float> *2.0f / float(kSubdivision);
@@ -289,6 +301,23 @@ void cSphere::MapCameraPositionData() {
 	cameraPositionData_->worldPosition.x = cameraPosition_->x;
 	cameraPositionData_->worldPosition.y = cameraPosition_->y;
 	cameraPositionData_->worldPosition.z = cameraPosition_->z;
+}
+
+void cSphere::CreatePointLightResource() {
+	pointLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(PointLight));
+	pointLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(PointLight));
+}
+
+void cSphere::MapPointLightData() {
+	// データを書き込む
+	pointLightData_ = nullptr;
+	// アドレス取得
+	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
+	pointLightData_->color = pointLight_->color;
+	pointLightData_->intensity = pointLight_->intensity;
+	pointLightData_->position = pointLight_->position;
+	pointLightData_->radius = pointLight_->radius;
+	pointLightData_->decay = pointLight_->decay;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

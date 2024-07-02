@@ -7,7 +7,7 @@
 class cModel {
 public:
 
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight *pointLight);
 	void Update();
 	void Draw(cPipelineStateObject::Blendmode blendMode);
 
@@ -51,6 +51,16 @@ private:
 	void CreateDirectionalLightResource();
 	void MapDirectionalLightData();
 #pragma endregion	
+
+#pragma region CameraPosition
+	void CreateCameraPositionResource();
+	void MapCameraPositionData();
+
+#pragma endregion
+#pragma region PointLight
+	void CreatePointLightResource();
+	void MapPointLightData();
+#pragma endregion
 
 	/*マテリアルデータをmtlファイルから作成する*/
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
@@ -111,5 +121,20 @@ private:/*メンバ変数*/
 	DirectionalLight* directionalLight_;
 #pragma endregion
 
+#pragma region CameraPosition
+	// カメラのポジションのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraPositionResource_;
+	// ポジションデータ
+	CameraForGPU* cameraPositionData_;
+	Vector3* cameraPosition_;
+#pragma endregion
+#pragma region PointLight
+	// ポイントライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> pointLightResource_;
+	// ポイントライトデータ
+	PointLight* pointLightData_;
+	// ポイントライトデータを受け取る箱
+	PointLight* pointLight_;
+#pragma endregion
 };
 
