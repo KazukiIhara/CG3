@@ -54,3 +54,14 @@ struct PointLight
     float radius;
     float decay;
 };
+
+struct SpotLight
+{
+    float32_t4 color;
+    float32_t3 position;
+    float32_t intensity;
+    float32_t3 direction;
+    float32_t distance;
+    float32_t decay;
+    float32_t cosAngle;
+};

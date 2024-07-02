@@ -45,10 +45,18 @@ void cGameScene::Initialize() {
 	directionalLight.intensity = 0.0f;
 
 	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLight_.intensity = 1.0f;
+	pointLight_.intensity = 0.0f;
 	pointLight_.position = { 0.0f,2.0f,0.0f };
 	pointLight_.radius = 10.0f;
 	pointLight_.decay = 5.0f;
+
+	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	spotLight_.position = { 2.0f,1.25f,0.0f };
+	spotLight_.distance = 7.0f;
+	spotLight_.direction = Normalize({ -1.0f,-1.0f,0.0f });
+	spotLight_.intensity = 4.0f;
+	spotLight_.decay = 2.0f;
+	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
