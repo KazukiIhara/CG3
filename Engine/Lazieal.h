@@ -76,7 +76,10 @@ struct PointLight {
 	float intensity;
 	float radius;
 	float decay;
+	float padding[2];
 };
+
+
 
 /*---関数---*/
 
