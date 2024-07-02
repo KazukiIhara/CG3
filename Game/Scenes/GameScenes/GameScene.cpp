@@ -56,6 +56,7 @@ void cGameScene::Initialize() {
 	spotLight_.direction = Normalize({ -1.0f,-1.0f,0.0f });
 	spotLight_.intensity = 4.0f;
 	spotLight_.decay = 2.0f;
+	spotLight_.cosFalloffStart = 0.1f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -129,7 +130,9 @@ void cGameScene::Update() {
 		ImGui::DragFloat3("Direction", &spotLight_.direction.x, 0.01f);
 		ImGui::DragFloat("Distance", &spotLight_.distance, 0.01f);
 		ImGui::DragFloat("Decay", &spotLight_.decay, 0.01f);
+		ImGui::DragFloat("cosFalloffStart", &spotLight_.cosFalloffStart, 0.01f);
 		ImGui::DragFloat("cosAngle", &spotLight_.cosAngle, 0.01f);
+		spotLight_.direction = Normalize(spotLight_.direction);
 		ImGui::TreePop();
 	}
 

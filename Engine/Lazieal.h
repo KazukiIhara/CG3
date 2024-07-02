@@ -86,6 +86,7 @@ struct SpotLight {
 	Vector3 direction;
 	float distance;
 	float decay;
+	float cosFalloffStart;
 	float cosAngle;
 	float padding[2];
 };

@@ -110,6 +110,7 @@ void cSphere::Update() {
 	spotLightData_->direction = spotLight_->direction;
 	spotLightData_->distance = spotLight_->distance;
 	spotLightData_->decay = spotLight_->decay;
+	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
 	spotLightData_->cosAngle = spotLight_->cosAngle;
 }
 
@@ -348,6 +349,7 @@ void cSphere::MapSpotLightData() {
 	spotLightData_->direction = spotLight_->direction;
 	spotLightData_->distance = spotLight_->distance;
 	spotLightData_->decay = spotLight_->decay;
+	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
 	spotLightData_->cosAngle = spotLight_->cosAngle;
 }
 

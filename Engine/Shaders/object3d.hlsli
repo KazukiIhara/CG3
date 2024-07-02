@@ -64,4 +64,5 @@ struct SpotLight
     float32_t distance;
     float32_t decay;
     float32_t cosAngle;
+    float32_t cosFalloffStart;
 };
