@@ -79,7 +79,17 @@ struct PointLight {
 	float padding[2];
 };
 
-
+struct SpotLight {
+	Vector4 color;
+	Vector3 position;
+	float intensity;
+	Vector3 direction;
+	float distance;
+	float decay;
+	float cosFalloffStart;
+	float cosAngle;
+	float padding[2];
+};
 
 /*---関数---*/
 

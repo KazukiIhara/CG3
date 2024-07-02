@@ -45,10 +45,19 @@ void cGameScene::Initialize() {
 	directionalLight.intensity = 0.0f;
 
 	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLight_.intensity = 1.0f;
+	pointLight_.intensity = 0.0f;
 	pointLight_.position = { 0.0f,2.0f,0.0f };
 	pointLight_.radius = 10.0f;
 	pointLight_.decay = 5.0f;
+
+	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	spotLight_.position = { 2.0f,1.25f,0.0f };
+	spotLight_.distance = 7.0f;
+	spotLight_.direction = Normalize({ -1.0f,-1.0f,0.0f });
+	spotLight_.intensity = 4.0f;
+	spotLight_.decay = 2.0f;
+	spotLight_.cosFalloffStart = 0.1f;
+	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
@@ -58,11 +67,11 @@ void cGameScene::Initialize() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	sphere_ = new cSphere();
-	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	terrain_ = new cModel();
 	terrain_->LoadObjFile("terrain.obj");
-	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
 }
@@ -114,6 +123,19 @@ void cGameScene::Update() {
 		ImGui::TreePop();
 	}
 
+	if (ImGui::TreeNodeEx("SpotLight", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::ColorEdit3("Color", &spotLight_.color.x);
+		ImGui::DragFloat3("Position", &spotLight_.position.x, 0.01f);
+		ImGui::DragFloat("Intensity", &spotLight_.intensity, 0.01f);
+		ImGui::DragFloat3("Direction", &spotLight_.direction.x, 0.01f);
+		ImGui::DragFloat("Distance", &spotLight_.distance, 0.01f);
+		ImGui::DragFloat("Decay", &spotLight_.decay, 0.01f);
+		ImGui::DragFloat("cosFalloffStart", &spotLight_.cosFalloffStart, 0.01f);
+		ImGui::DragFloat("cosAngle", &spotLight_.cosAngle, 0.01f);
+		spotLight_.direction = Normalize(spotLight_.direction);
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNodeEx("PointLight", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit3("Color", &pointLight_.color.x);
 		ImGui::DragFloat3("Position", &pointLight_.position.x, 0.01f);
@@ -122,6 +144,7 @@ void cGameScene::Update() {
 		ImGui::DragFloat("Decay", &pointLight_.decay, 0.01f);
 		ImGui::TreePop();
 	}
+
 
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.002f);

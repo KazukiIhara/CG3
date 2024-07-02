@@ -58,6 +58,8 @@ private:
 	/*光源*/
 	DirectionalLight directionalLight{};
 	PointLight pointLight_{};
+	SpotLight spotLight_{};
+
 	sTransform transform_;
 	sTransform uvTransform_;
 	// スフィア

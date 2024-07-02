@@ -9,7 +9,7 @@
 
 class cSphere {
 public:
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight, SpotLight* spotLight);
 	void Update();
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
@@ -60,6 +60,10 @@ private:/*メンバ関数*/
 #pragma region PointLight
 	void CreatePointLightResource();
 	void MapPointLightData();
+#pragma endregion
+#pragma region SpotLight
+	void CreateSpotLightResource();
+	void MapSpotLightData();
 #pragma endregion
 
 	/*バッファリソースを作成する*/
@@ -128,6 +132,15 @@ private:/*メンバ変数*/
 	// ポイントライトデータを受け取る箱
 	PointLight* pointLight_;
 #pragma endregion
+#pragma region SpotLight
+	// スポットライトのリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> spotLightResource_;
+	// スポットライトデータ
+	SpotLight* spotLightData_;
+	// スポットライトデータを受け取る箱
+	SpotLight* spotLight_;
+#pragma endregion
+
 private:/*メンバ定数*/
 
 	/*球の分割数*/

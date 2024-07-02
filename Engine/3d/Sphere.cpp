@@ -4,7 +4,7 @@
 #include "TextureManager.h"
 #include <numbers>
 
-void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight) {
+void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Material* material, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight, SpotLight* spotLight) {
 	/*NullCheck*/
 	assert(transform);
 	assert(uvTransform);
@@ -13,6 +13,7 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 	assert(light);
 	assert(cameraPosition);
 	assert(pointLight);
+	assert(spotLight);
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
@@ -21,6 +22,7 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 	directionalLight_ = light;
 	cameraPosition_ = cameraPosition;
 	pointLight_ = pointLight;
+	spotLight_ = spotLight;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -63,6 +65,9 @@ void cSphere::Initialize(sTransform* transform, Matrix4x4* viewProjection, Mater
 
 	CreatePointLightResource();
 	MapPointLightData();
+
+	CreateSpotLightResource();
+	MapSpotLightData();
 }
 
 void cSphere::Update() {
@@ -98,6 +103,15 @@ void cSphere::Update() {
 	pointLightData_->position = pointLight_->position;
 	pointLightData_->radius = pointLight_->radius;
 	pointLightData_->decay = pointLight_->decay;
+
+	spotLightData_->color = spotLight_->color;
+	spotLightData_->position = spotLight_->position;
+	spotLightData_->intensity = spotLight_->intensity;
+	spotLightData_->direction = spotLight_->direction;
+	spotLightData_->distance = spotLight_->distance;
+	spotLightData_->decay = spotLight_->decay;
+	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
+	spotLightData_->cosAngle = spotLight_->cosAngle;
 }
 
 void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
@@ -122,6 +136,8 @@ void cSphere::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blend
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
 	// pointLight
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
+	// SpotLight
+	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawIndexedInstanced(sphereIndexNum, 1, 0, 0, 0);
 
@@ -305,7 +321,6 @@ void cSphere::MapCameraPositionData() {
 
 void cSphere::CreatePointLightResource() {
 	pointLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(PointLight));
-	pointLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(PointLight));
 }
 
 void cSphere::MapPointLightData() {
@@ -318,6 +333,24 @@ void cSphere::MapPointLightData() {
 	pointLightData_->position = pointLight_->position;
 	pointLightData_->radius = pointLight_->radius;
 	pointLightData_->decay = pointLight_->decay;
+}
+
+void cSphere::CreateSpotLightResource() {
+	spotLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(SpotLight));
+}
+
+void cSphere::MapSpotLightData() {
+	spotLightData_ = nullptr;
+
+	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
+	spotLightData_->color = spotLight_->color;
+	spotLightData_->position = spotLight_->position;
+	spotLightData_->intensity = spotLight_->intensity;
+	spotLightData_->direction = spotLight_->direction;
+	spotLightData_->distance = spotLight_->distance;
+	spotLightData_->decay = spotLight_->decay;
+	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
+	spotLightData_->cosAngle = spotLight_->cosAngle;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cSphere::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
