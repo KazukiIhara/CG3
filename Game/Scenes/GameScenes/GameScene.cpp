@@ -66,11 +66,11 @@ void cGameScene::Initialize() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	sphere_ = new cSphere();
-	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	terrain_ = new cModel();
 	terrain_->LoadObjFile("terrain.obj");
-	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
 }
@@ -122,6 +122,17 @@ void cGameScene::Update() {
 		ImGui::TreePop();
 	}
 
+	if (ImGui::TreeNodeEx("SpotLight", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::ColorEdit3("Color", &spotLight_.color.x);
+		ImGui::DragFloat3("Position", &spotLight_.position.x, 0.01f);
+		ImGui::DragFloat("Intensity", &spotLight_.intensity, 0.01f);
+		ImGui::DragFloat3("Direction", &spotLight_.direction.x, 0.01f);
+		ImGui::DragFloat("Distance", &spotLight_.distance, 0.01f);
+		ImGui::DragFloat("Decay", &spotLight_.decay, 0.01f);
+		ImGui::DragFloat("cosAngle", &spotLight_.cosAngle, 0.01f);
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNodeEx("PointLight", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit3("Color", &pointLight_.color.x);
 		ImGui::DragFloat3("Position", &pointLight_.position.x, 0.01f);
@@ -130,6 +141,7 @@ void cGameScene::Update() {
 		ImGui::DragFloat("Decay", &pointLight_.decay, 0.01f);
 		ImGui::TreePop();
 	}
+
 
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.002f);
