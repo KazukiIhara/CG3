@@ -285,8 +285,5 @@
     <FxCompile Include="Engine\Shaders\Particle.VS.hlsl">
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="BasicGeometryShader.hlsl">
-      <Filter>Engine\シェーダーファイル</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
