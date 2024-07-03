@@ -70,7 +70,7 @@ void cGameScene::Initialize() {
 	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	terrain_ = new cModel();
-	terrain_->LoadObjFileWithAssimp("terrain.obj");
+	terrain_->LoadObjFileWithAssimp("plane.gltf");
 	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
@@ -191,7 +191,7 @@ void cGameScene::Draw() {
 	/// 
 
 	terrain_->Draw(blendMode_);
-	sphere_->Draw(textureHandle_, blendMode_);
+	//sphere_->Draw(textureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

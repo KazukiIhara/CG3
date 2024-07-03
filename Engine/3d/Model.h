@@ -4,6 +4,9 @@
 #include "DirectXCommon.h"
 #include "PipelineStateObject.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 class cModel {
 public:
@@ -71,6 +74,8 @@ private:
 	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
+	Node ReadNode(aiNode* node);
 
 private:/*メンバ変数*/
 
@@ -149,5 +154,6 @@ private:/*メンバ変数*/
 	// スポットライトデータを受け取る箱
 	SpotLight* spotLight_;
 #pragma endregion
+
 };
 

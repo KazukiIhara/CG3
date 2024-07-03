@@ -60,10 +60,16 @@ struct MaterialData {
 	bool enbleLighting;
 };
 
+struct Node {
+	Matrix4x4 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
 
 struct ModelData {
 	std::vector<sVertexData> vertices;
 	MaterialData material;
+	Node rootNode;
 };
 
 struct CameraForGPU {
