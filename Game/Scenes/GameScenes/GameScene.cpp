@@ -70,7 +70,7 @@ void cGameScene::Initialize() {
 	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	terrain_ = new cModel();
-	terrain_->LoadObjFile("terrain.obj");
+	terrain_->LoadObjFileWithAssimp("terrain.obj");
 	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
 	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
