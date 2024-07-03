@@ -55,6 +55,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Common;$(ProjectDir)Engine\externals;$(ProjectDir)Engine\externals\assimp\include;$(ProjectDir)Engine\externals\libs\math;$(ProjectDir)Game\Cameras;$(ProjectDir)Game\GameObjects;$(ProjectDir)Game\Resources;$(ProjectDir)Game\Scenes;$(ProjectDir)Game\Scenes\Base;$(ProjectDir)Game\Scenes\GameScenes;$(ProjectDir)Game\Scenes\Manager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

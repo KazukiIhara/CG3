@@ -216,7 +216,7 @@ void cModel::LoadObjFileWithAssimp(const std::string& filename, const std::strin
 
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;
-	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_Triangulate);
 	assert(scene->HasMeshes());
 
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
@@ -251,6 +251,7 @@ void cModel::LoadObjFileWithAssimp(const std::string& filename, const std::strin
 			aiString textureFilePath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
 			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+			modelData.material.color = { 1.0f,1.0f,1.0f,1.0f };
 			modelData.material.textureHandle = cTextureManager::Load(modelData.material.textureFilePath);
 		}
 	}
