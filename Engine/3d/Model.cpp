@@ -136,7 +136,7 @@ void cModel::Draw(cPipelineStateObject::Blendmode blendMode) {
 	// SpotLight
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	cDirectXCommon::GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
 void cModel::LoadObjFile(const std::string& filename, const std::string& directoryPath) {
