@@ -83,6 +83,8 @@ private:/*メンバ変数*/
 	/*モデルデータを受け取る箱*/
 	ModelData modelData;
 
+	static const int vertexCount = 1;
+
 #pragma endregion
 
 #pragma region 頂点

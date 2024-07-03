@@ -120,7 +120,7 @@ void cModel::Draw(cPipelineStateObject::Blendmode blendMode) {
 	//VBVを設定
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	cDirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cDirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 	/*マテリアルCBufferの場所を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	/*wvp用のCBufferの場所を設定*/
@@ -273,7 +273,9 @@ void cModel::CreateVretexBufferView() {
 void cModel::MapVertexData() {
 	vertexData_ = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	std::memcpy(vertexData_, modelData.vertices.data(), sizeof(sVertexData) * modelData.vertices.size());
+	vertexData_->position = { 0.0f,0.0f,0.0f };
+	vertexData_->normal = { 0,0,1 };
+	vertexData_->texcoord = { 0,1 };
 }
 
 void cModel::CreateIndexResource() {
