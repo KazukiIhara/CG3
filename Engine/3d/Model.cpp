@@ -2,10 +2,8 @@
 #include <fstream>
 #include "Model.h"
 #include "TextureManager.h"
+#include "MathOperator.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 void cModel::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight, SpotLight* spotLight) {
 	/*NullCheck*/
@@ -81,8 +79,8 @@ void cModel::Update() {
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 	Matrix4x4 worldInverseTransposeMatrix = MakeInverseTransposeMatrix(worldMatrix);
 
-	transformationData_->WVP = worldViewProjectionMatrix;
-	transformationData_->World = worldMatrix;
+	transformationData_->WVP = modelData.rootNode.localMatrix * worldViewProjectionMatrix;
+	transformationData_->World = modelData.rootNode.localMatrix * worldMatrix;
 	transformationData_->WorldInverseTransepose = worldInverseTransposeMatrix;
 
 	// 色を書き込む
@@ -219,6 +217,8 @@ void cModel::LoadObjFileWithAssimp(const std::string& filename, const std::strin
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_Triangulate);
 	assert(scene->HasMeshes());
 
+	modelData.rootNode = ReadNode(scene->mRootNode);
+
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals()); // 法線がないmeshは今回は非対応
@@ -255,7 +255,6 @@ void cModel::LoadObjFileWithAssimp(const std::string& filename, const std::strin
 			modelData.material.textureHandle = cTextureManager::Load(modelData.material.textureFilePath);
 		}
 	}
-
 }
 
 void cModel::CreateVertexResource() {
@@ -440,5 +439,23 @@ Microsoft::WRL::ComPtr<ID3D12Resource> cModel::CreateBufferResource(ID3D12Device
 		IID_PPV_ARGS(&resource));
 	assert(SUCCEEDED(hr));
 	return resource;
+}
+
+Node cModel::ReadNode(aiNode* node) {
+	Node result;
+	aiMatrix4x4 aiLocalmatrix = node->mTransformation; //nodeのlocalMatrixを取得
+	aiLocalmatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			result.localMatrix.m[i][j] = aiLocalmatrix[i][j];
+		}
+	}
+	result.name = node->mName.C_Str(); // node名を格納
+	result.children.resize(node->mNumChildren);// 子供の数だけ確保
+	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; childIndex++) {
+		// 再帰的に読んで階層構造を作っていく
+		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
+	}
+	return result;
 }
 
