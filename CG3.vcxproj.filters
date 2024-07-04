@@ -300,5 +300,8 @@
     <FxCompile Include="Engine\Shaders\primitive3d.VS.hlsl">
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
+    <FxCompile Include="Engine\Shaders\primitive.GS.hlsl">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

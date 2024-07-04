@@ -132,8 +132,7 @@ void cPrimitiveSystem::MapMaterialData() {
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	// テクスチャハンドルを取得
-
+	// 色の設定
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	// Lightingを有効にする
 	materialData_->enbleLighting = false;

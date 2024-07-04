@@ -97,6 +97,16 @@ struct SpotLight {
 	float padding[2];
 };
 
+struct VertexPosNormalUv {
+	Vector3 position;
+	Vector3 normal;
+	Vector2 texcood;
+};
+
+struct VertexPos {
+	Vector3 position;
+};
+
 /*---関数---*/
 
 int Add(const int& a, const int& b);
