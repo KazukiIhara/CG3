@@ -13,11 +13,8 @@ public:
 
 	void Initialize(sTransform* transform, Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
-	void Draw(cPipelineStateObject::Blendmode blendMode);
+	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
-	/*Objファイルからデータを読み取る関数*/
-	void LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
-	void LoadModelFileWithAssimp(const std::string& filename, const std::string& directoryPath = "Game/Resources");
 private:
 #pragma region Vertex
 	/*頂点リソースの作成*/
@@ -41,21 +38,10 @@ private:
 	/*データを書き込む*/
 	void MapWVPData();
 #pragma endregion
-
-	/*マテリアルデータをmtlファイルから作成する*/
-	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	/*バッファリソースを作成する*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
-	Node ReadNode(aiNode* node);
-
 private:/*メンバ変数*/
-
-#pragma region モデル
-	/*モデルデータを受け取る箱*/
-	ModelData modelData;
-
-#pragma endregion
 
 #pragma region 頂点
 	/*頂点リソース*/

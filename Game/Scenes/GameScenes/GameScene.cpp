@@ -32,7 +32,7 @@ void cGameScene::Initialize() {
 	// テクスチャマネージャー初期化
 	cTextureManager::Initialize();
 	/*カメラ作成*/
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.1f,1.0f,0.0f},{0.0f,5.0f,15.0f} };
+	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	mainCamera_ = new cCameraController();
 	mainCamera_->Initialize(&cameraTransform_);
 
@@ -44,8 +44,8 @@ void cGameScene::Initialize() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	primitive_ = new cPrimitiveSystem();
-	primitive_->LoadModelFileWithAssimp("plane.gltf");
 	primitive_->Initialize(&transform_, viewProjectionMatrix_, &uvTransform_);
+	textureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 }
 
 void cGameScene::Update() {
@@ -130,7 +130,7 @@ void cGameScene::Draw() {
 	/// 描画処理ここから
 	/// 
 
-	primitive_->Draw(blendMode_);
+	primitive_->Draw(textureHandle_, blendMode_);
 
 	///
 	/// 描画処理ここまで

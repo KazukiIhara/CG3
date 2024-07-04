@@ -66,7 +66,7 @@ private:
 
 	// モデル
 	cPrimitiveSystem* primitive_{};
-
+	uint32_t textureHandle_;
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };
