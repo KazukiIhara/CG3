@@ -39,18 +39,13 @@ void cGameScene::Initialize() {
 	/*ゲームシーンのビューマトリックスにポインタを渡す*/
 	viewProjectionMatrix_ = mainCamera_->GetViewProjectionMatrix();
 
-	/*ライト*/
-	directionalLight.color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLight.direction = { 0.0f,1.0f,0.0f };
-	directionalLight.intensity = 1.0f;
-
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };	
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	primitive_ = new cPrimitiveSystem();
 	primitive_->LoadModelFileWithAssimp("plane.obj");
-	primitive_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate);
+	primitive_->Initialize(&transform_, viewProjectionMatrix_, &uvTransform_);
 }
 
 void cGameScene::Update() {
@@ -92,14 +87,6 @@ void cGameScene::Update() {
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNodeEx("DirectionalLight", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::ColorEdit3("Color", &directionalLight.color.x);
-		ImGui::DragFloat3("Direction", &directionalLight.direction.x, 0.002f);
-		ImGui::DragFloat("Intensity", &directionalLight.intensity, 0.01f);
-		directionalLight.direction = Normalize(directionalLight.direction);
-		ImGui::TreePop();
-	}
-	
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.002f);
 		ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.002f);

@@ -5,20 +5,18 @@
 #include "MathOperator.h"
 
 
-void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition) {
+void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, sTransform* uvTransform) {
 	/*NullCheck*/
 
 	assert(transform);
 	assert(uvTransform);
-	assert(viewProjection);
-	assert(light);
-	assert(cameraPosition);	
+	assert(viewProjection);	
+	
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
-	directionalLight_ = light;
-	cameraPosition_ = cameraPosition;
+	
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -52,14 +50,6 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 	MapWVPData();
 #pragma endregion
 
-#pragma region ライト
-	/*DirectionalLight用のリソースを作成*/
-	CreateDirectionalLightResource();
-	/*データを書き込む*/
-	MapDirectionalLightData();
-#pragma endregion
-	CreateCameraPositionResource();
-	MapCameraPositionData();
 }
 
 void cPrimitiveSystem::Update() {
@@ -81,12 +71,6 @@ void cPrimitiveSystem::Update() {
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
 	materialData_->uvTransformMatrix = uvTransformMatrix;
-
-	directionalLightData_->color = directionalLight_->color;
-	directionalLightData_->direction = directionalLight_->direction;
-	directionalLightData_->intensity = directionalLight_->intensity;
-
-
 }
 
 void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
@@ -103,10 +87,6 @@ void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 	/*SRVのDescriptorTableの先頭を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[modelData.material.textureHandle].gpuDescHandleSRV);
-	/*DirectionalLight*/
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
-	// cameraPosition
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
@@ -293,35 +273,6 @@ void cPrimitiveSystem::MapWVPData() {
 	transformationData_->WVP = MakeIdentity4x4();
 	transformationData_->World = MakeIdentity4x4();
 }
-
-void cPrimitiveSystem::CreateDirectionalLightResource() {
-	//平行光源用のResourceを作成する
-	directionalLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(DirectionalLight));
-}
-
-void cPrimitiveSystem::MapDirectionalLightData() {
-	//データを書き込む
-	directionalLightData_ = nullptr;
-	//書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
-	//ライトのデータを書き込む
-	directionalLightData_->color = directionalLight_->color;
-	directionalLightData_->direction = directionalLight_->direction;
-	directionalLightData_->intensity = directionalLight_->intensity;
-}
-
-void cPrimitiveSystem::CreateCameraPositionResource() {
-	cameraPositionResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(CameraForGPU));
-}
-
-void cPrimitiveSystem::MapCameraPositionData() {
-	cameraPositionData_ = nullptr;
-	cameraPositionResource_->Map(0, nullptr, reinterpret_cast<void**>(&cameraPositionData_));
-	cameraPositionData_->worldPosition.x = cameraPosition_->x;
-	cameraPositionData_->worldPosition.y = cameraPosition_->y;
-	cameraPositionData_->worldPosition.z = cameraPosition_->z;
-}
-
 
 MaterialData cPrimitiveSystem::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 	MaterialData materialData; //構築するMaterialData

@@ -11,7 +11,7 @@
 class cPrimitiveSystem {
 public:
 
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, sTransform* uvTransform);
 	void Update();
 	void Draw(cPipelineStateObject::Blendmode blendMode);
 
@@ -49,17 +49,6 @@ private:
 	void CreateWVPResource();
 	/*データを書き込む*/
 	void MapWVPData();
-#pragma endregion
-
-#pragma region Light
-	void CreateDirectionalLightResource();
-	void MapDirectionalLightData();
-#pragma endregion	
-
-#pragma region CameraPosition
-	void CreateCameraPositionResource();
-	void MapCameraPositionData();
-
 #pragma endregion
 
 	/*マテリアルデータをmtlファイルから作成する*/
@@ -112,23 +101,6 @@ private:/*メンバ変数*/
 	sTransform* transform_;
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
-#pragma endregion
-
-#pragma region ライト
-	/*ライトのリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
-	/*ライトデータ*/
-	DirectionalLight* directionalLightData_;
-	/*ライトを受け取る箱*/
-	DirectionalLight* directionalLight_;
-#pragma endregion
-
-#pragma region CameraPosition
-	// カメラのポジションのリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> cameraPositionResource_;
-	// ポジションデータ
-	CameraForGPU* cameraPositionData_;
-	Vector3* cameraPosition_;
 #pragma endregion
 
 };
