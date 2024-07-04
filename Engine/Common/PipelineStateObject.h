@@ -129,6 +129,10 @@ private:
 	// Particle用
 	Microsoft::WRL::ComPtr<ID3DBlob> particlePixelShaderBlob_;
 
+	// ジオメトリシェーダーの塊
+	Microsoft::WRL::ComPtr<ID3DBlob> primitiveGeometryShaderBlob_;
+
+
 	// グラフィックスパイプラインステイトオブジェクト a.k.a PSO (本人)
 	// Primitive3d用
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> primitiveGraphicsPipelineState_[kBlendModeNum];

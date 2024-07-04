@@ -473,6 +473,11 @@ void cPipelineStateObject::CompileShaders() {
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(primitivePixelShaderBlob_ != nullptr);
 
+	primitiveGeometryShaderBlob_ = nullptr;
+	primitiveGeometryShaderBlob_ = CompileShader(L"Engine/Shaders/primitive3d.GS.hlsl",
+		L"gs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(primitiveGeometryShaderBlob_ != nullptr);
+
 	// 3Dmodel用シェーダー
 	model3DVertexShaderBlob_ = nullptr;
 	model3DVertexShaderBlob_ = CompileShader(L"Engine/Shaders/Object3d.VS.hlsl",
@@ -507,10 +512,12 @@ void cPipelineStateObject::CreatePrimitivePipelineStateObject() {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = primitiveRootSignature_.Get();
 	graphicsPipelineStateDesc.InputLayout = InputLayoutSetting();
-	graphicsPipelineStateDesc.VS = {primitiveVertexShaderBlob_->GetBufferPointer(),
+	graphicsPipelineStateDesc.VS = { primitiveVertexShaderBlob_->GetBufferPointer(),
 	primitiveVertexShaderBlob_->GetBufferSize() };
 	graphicsPipelineStateDesc.PS = { primitivePixelShaderBlob_->GetBufferPointer(),
 	primitivePixelShaderBlob_->GetBufferSize() };
+	graphicsPipelineStateDesc.GS = { primitiveGeometryShaderBlob_->GetBufferPointer(),
+	primitiveGeometryShaderBlob_->GetBufferSize() };
 	graphicsPipelineStateDesc.RasterizerState = RasterizerStateSetting();
 	//書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
