@@ -76,7 +76,7 @@ void cPrimitiveSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendm
 	/*SRVのDescriptorTableの先頭を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, cTextureManager::GetTexture()[textureHandle].gpuDescHandleSRV);
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	cDirectXCommon::GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	cDirectXCommon::GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
 void cPrimitiveSystem::CreateVertexResource() {
@@ -108,18 +108,18 @@ void cPrimitiveSystem::MapVertexData() {
 	vertexData_[2].position = { -1.0f,-1.0f,0.0f,1.0f };
 	vertexData_[2].texcoord = { 0.0f,1.0f };
 	vertexData_[2].normal = { 0.0f,0.0f,-1.0f };
-	//左下
-	vertexData_[3].position = { -1.0f,-1.0f,0.0f,1.0f };
-	vertexData_[3].texcoord = { 0.0f,1.0f };
-	vertexData_[3].normal = { 0.0f,0.0f,-1.0f };
-	//右上
-	vertexData_[4].position = { 1.0f,1.0f,0.0f,1.0f };
-	vertexData_[4].texcoord = { 1.0f,0.0f };
-	vertexData_[4].normal = { 0.0f,0.0f,-1.0f };
-	//右下
-	vertexData_[5].position = { 1.0f,-1.0f,0.0f,1.0f };
-	vertexData_[5].texcoord = { 1.0f,1.0f };
-	vertexData_[5].normal = { 0.0f,0.0f,-1.0f };
+	////左下
+	//vertexData_[3].position = { -1.0f,-1.0f,0.0f,1.0f };
+	//vertexData_[3].texcoord = { 0.0f,1.0f };
+	//vertexData_[3].normal = { 0.0f,0.0f,-1.0f };
+	////右上
+	//vertexData_[4].position = { 1.0f,1.0f,0.0f,1.0f };
+	//vertexData_[4].texcoord = { 1.0f,0.0f };
+	//vertexData_[4].normal = { 0.0f,0.0f,-1.0f };
+	////右下
+	//vertexData_[5].position = { 1.0f,-1.0f,0.0f,1.0f };
+	//vertexData_[5].texcoord = { 1.0f,1.0f };
+	//vertexData_[5].normal = { 0.0f,0.0f,-1.0f };
 }
 
 void cPrimitiveSystem::CreateMaterialResource() {
