@@ -1,5 +1,5 @@
 
-#include "object3d.hlsli"
+#include "primitive3d.hlsli"
 
 ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);

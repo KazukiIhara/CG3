@@ -59,11 +59,9 @@ void cGameScene::Initialize() {
 	spotLight_.cosFalloffStart = 0.1f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };	
 
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
 
 	primitive_ = new cPrimitiveSystem();
 	primitive_->LoadModelFileWithAssimp("plane.obj");

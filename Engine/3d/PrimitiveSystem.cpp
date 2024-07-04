@@ -115,8 +115,8 @@ void cPrimitiveSystem::Update() {
 
 void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
 	//RootSIgnatureを設定。PSOに設定しているけど別途設定が必要
-	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::Get3DModelRootSignature());
-	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::Get3DModelPipelineState(blendMode));//PSOを設定
+	cDirectXCommon::GetCommandList()->SetGraphicsRootSignature(cPipelineStateObject::GetPrimitive3dRootSignature());
+	cDirectXCommon::GetCommandList()->SetPipelineState(cPipelineStateObject::GetPrimitive3dPipelineState(blendMode));//PSOを設定
 	//VBVを設定
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
