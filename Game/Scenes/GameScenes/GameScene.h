@@ -9,6 +9,7 @@ class cImGuiManager;
 class cCameraController;
 
 class cModel;
+class cPrimitiveSystem;
 class cTriangle;
 class cSprite;
 class cSphere;
@@ -62,17 +63,11 @@ private:
 
 	sTransform transform_;
 	sTransform uvTransform_;
-	// スフィア
-	cSphere* sphere_{};
 
-	Material material_{};
-
-	uint32_t textureHandle_;
 
 	// モデル
-	cModel* terrain_{};
+	cPrimitiveSystem* primitive_{};
 
-	Material terrainMaterial_;
 
 	// BlendMode
 	const char* BlendMode[6] = { "None","Normal","Add","Subtract","Multiply","Screen" };

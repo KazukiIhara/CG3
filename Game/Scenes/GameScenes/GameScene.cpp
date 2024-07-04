@@ -10,6 +10,7 @@
 #include "Sphere.h"
 #include "Sprite.h"
 #include "ParticleSystem.h"
+#include "PrimitiveSystem.h"
 #include "ImGuiManager.h"
 
 
@@ -24,8 +25,7 @@ cGameScene::~cGameScene() {
 	if (sceneNo == kThisSceneNo_) {
 		/*メインカメラ開放*/
 		delete mainCamera_;
-		delete sphere_;
-		delete terrain_;
+		delete primitive_;
 	}
 }
 void cGameScene::Initialize() {
@@ -60,20 +60,14 @@ void cGameScene::Initialize() {
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	material_.color = { 1.0f,1.0f,1.0f,1.0f };
-	material_.enbleLighting = true;
-	material_.shininess = 40.0f;
+	
 
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	sphere_ = new cSphere();
-	sphere_->Initialize(&transform_, viewProjectionMatrix_, &material_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 
-	terrain_ = new cModel();
-	terrain_->LoadModelFileWithAssimp("plane.gltf");
-	terrain_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
-
-	textureHandle_ = cTextureManager::Load("Game/Resources/monsterBall.png");
+	primitive_ = new cPrimitiveSystem();
+	primitive_->LoadModelFileWithAssimp("plane.obj");
+	primitive_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_, &spotLight_);
 }
 
 void cGameScene::Update() {
@@ -172,8 +166,7 @@ void cGameScene::Update() {
 	/*カメラのアップデート*/
 	mainCamera_->Update();
 
-	terrain_->Update();
-	sphere_->Update();
+	primitive_->Update();
 
 	/*更新処理の最後にImGuiの内部コマンドを生成*/
 	imgui_->EndFrame();
@@ -190,8 +183,7 @@ void cGameScene::Draw() {
 	/// 描画処理ここから
 	/// 
 
-	terrain_->Draw(blendMode_);
-	//sphere_->Draw(textureHandle_, blendMode_);
+	primitive_->Draw(blendMode_);
 
 	///
 	/// 描画処理ここまで

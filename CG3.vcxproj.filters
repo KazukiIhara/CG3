@@ -163,6 +163,9 @@
     <ClCompile Include="Collision.cpp">
       <Filter>Engine\ソース ファイル\BaseCollision</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\3d\PrimitiveSystem.cpp">
+      <Filter>Engine\ソース ファイル\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\2d\Sprite.h">
@@ -258,6 +261,9 @@
     <ClInclude Include="Collision.h">
       <Filter>Engine\ヘッダー ファイル\BaseCollision</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\3d\PrimitiveSystem.h">
+      <Filter>Engine\ヘッダー ファイル\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\externals\imgui\LICENSE.txt">
@@ -269,6 +275,9 @@
       <Filter>Engine\シェーダーファイル</Filter>
     </None>
     <None Include="Engine\Shaders\Particle.hlsli">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </None>
+    <None Include="Engine\Shaders\primitive3d.hlsli">
       <Filter>Engine\シェーダーファイル</Filter>
     </None>
   </ItemGroup>
@@ -283,6 +292,12 @@
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="Engine\Shaders\Particle.VS.hlsl">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shaders\primitive3d.PS.hlsl">
+      <Filter>Engine\シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shaders\primitive3d.VS.hlsl">
       <Filter>Engine\シェーダーファイル</Filter>
     </FxCompile>
   </ItemGroup>
