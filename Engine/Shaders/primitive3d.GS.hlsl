@@ -3,16 +3,21 @@
 
 [maxvertexcount(3)]
 void main(
-	triangle VertexShaderOutput input[3],
+	point VertexShaderOutput input[1],
 	inout TriangleStream<GeometryShaderOutput> output
 )
 {
-    for (uint i = 0; i < 3; i++)
-    {
-        GeometryShaderOutput element;
-        element.position = input[i].position;
-        element.normal = input[i].normal;
-        element.texcoord = input[i].texcoord;
-        output.Append(element);
-    }
+    GeometryShaderOutput element;
+    element.position = input[0].position;
+    element.normal = input[0].normal;
+    element.texcoord = input[0].texcoord;
+    output.Append(element);
+    element.position = input[0].position + float4(10.0f, 10.0f, 0.0f, 0.0f);
+    element.normal = input[0].normal;
+    element.texcoord = input[0].texcoord;
+    output.Append(element);
+    element.position = input[0].position + float4(10.0f, 0.0f, 0.0f, 0.0f);
+    element.normal = input[0].normal;
+    element.texcoord = input[0].texcoord;
+    output.Append(element);
 }
