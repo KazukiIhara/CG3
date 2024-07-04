@@ -121,7 +121,7 @@ void cPipelineStateObject::CreatePrimitive3dRootSignature() {
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// RootParameter作成。
-	D3D12_ROOT_PARAMETER rootParameters[7] = {};
+	D3D12_ROOT_PARAMETER rootParameters[6] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;					//レジスタ番号0とバインド
@@ -146,10 +146,6 @@ void cPipelineStateObject::CreatePrimitive3dRootSignature() {
 	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameters[5].Descriptor.ShaderRegister = 3;					//レジスタ番号2とバインド
-
-	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
-	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
-	rootParameters[6].Descriptor.ShaderRegister = 4;					//レジスタ番号2とバインド
 
 
 	descriptionRootSignature.pParameters = rootParameters;				//ルートパラメータ配列へのポインタ
@@ -518,7 +514,7 @@ void cPipelineStateObject::CreatePrimitivePipelineStateObject() {
 	assert(primitivePixelShaderBlob_);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = model3DRootSignature_.Get();
+	graphicsPipelineStateDesc.pRootSignature = primitiveRootSignature_.Get();
 	graphicsPipelineStateDesc.InputLayout = InputLayoutSetting();
 	graphicsPipelineStateDesc.VS = {primitiveVertexShaderBlob_->GetBufferPointer(),
 	primitiveVertexShaderBlob_->GetBufferSize() };

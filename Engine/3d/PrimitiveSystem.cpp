@@ -5,7 +5,7 @@
 #include "MathOperator.h"
 
 
-void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight, SpotLight* spotLight) {
+void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight) {
 	/*NullCheck*/
 
 	assert(transform);
@@ -14,7 +14,7 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 	assert(light);
 	assert(cameraPosition);
 	assert(pointLight);
-	assert(spotLight);
+	
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
@@ -22,7 +22,6 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 	directionalLight_ = light;
 	cameraPosition_ = cameraPosition;
 	pointLight_ = pointLight;
-	spotLight_ = spotLight;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -68,8 +67,6 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 	CreatePointLightResource();
 	MapPointLightData();
 
-	CreateSpotLightResource();
-	MapSpotLightData();
 
 }
 
@@ -103,14 +100,6 @@ void cPrimitiveSystem::Update() {
 	pointLightData_->radius = pointLight_->radius;
 	pointLightData_->decay = pointLight_->decay;
 
-	spotLightData_->color = spotLight_->color;
-	spotLightData_->position = spotLight_->position;
-	spotLightData_->intensity = spotLight_->intensity;
-	spotLightData_->direction = spotLight_->direction;
-	spotLightData_->distance = spotLight_->distance;
-	spotLightData_->decay = spotLight_->decay;
-	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
-	spotLightData_->cosAngle = spotLight_->cosAngle;
 }
 
 void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
@@ -133,8 +122,6 @@ void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
 	// pointLight
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
-	// SpotLight
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(6, spotLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
@@ -366,23 +353,6 @@ void cPrimitiveSystem::MapPointLightData() {
 	pointLightData_->decay = pointLight_->decay;
 }
 
-void cPrimitiveSystem::CreateSpotLightResource() {
-	spotLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(SpotLight));
-}
-
-void cPrimitiveSystem::MapSpotLightData() {
-	spotLightData_ = nullptr;
-
-	spotLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
-	spotLightData_->color = spotLight_->color;
-	spotLightData_->position = spotLight_->position;
-	spotLightData_->intensity = spotLight_->intensity;
-	spotLightData_->direction = spotLight_->direction;
-	spotLightData_->distance = spotLight_->distance;
-	spotLightData_->decay = spotLight_->decay;
-	spotLightData_->cosFalloffStart = spotLight_->cosFalloffStart;
-	spotLightData_->cosAngle = spotLight_->cosAngle;
-}
 
 MaterialData cPrimitiveSystem::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 	MaterialData materialData; //構築するMaterialData

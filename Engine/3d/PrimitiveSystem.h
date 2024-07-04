@@ -11,7 +11,7 @@
 class cPrimitiveSystem {
 public:
 
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight, SpotLight* spotLight);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight);
 	void Update();
 	void Draw(cPipelineStateObject::Blendmode blendMode);
 
@@ -64,10 +64,6 @@ private:
 #pragma region PointLight
 	void CreatePointLightResource();
 	void MapPointLightData();
-#pragma endregion
-#pragma region SpotLight
-	void CreateSpotLightResource();
-	void MapSpotLightData();
 #pragma endregion
 
 	/*マテリアルデータをmtlファイルから作成する*/
@@ -145,14 +141,6 @@ private:/*メンバ変数*/
 	PointLight* pointLightData_;
 	// ポイントライトデータを受け取る箱
 	PointLight* pointLight_;
-#pragma endregion
-#pragma region SpotLight
-	// スポットライトのリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> spotLightResource_;
-	// スポットライトデータ
-	SpotLight* spotLightData_;
-	// スポットライトデータを受け取る箱
-	SpotLight* spotLight_;
 #pragma endregion
 
 };
