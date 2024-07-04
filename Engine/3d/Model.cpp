@@ -210,7 +210,7 @@ void cModel::LoadObjFile(const std::string& filename, const std::string& directo
 	}
 }
 
-void cModel::LoadFileWithAssimp(const std::string& filename, const std::string& directoryPath) {
+void cModel::LoadModelFileWithAssimp(const std::string& filename, const std::string& directoryPath) {
 
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;

@@ -17,7 +17,7 @@ public:
 
 	/*Objファイルからデータを読み取る関数*/
 	void LoadObjFile(const std::string& filename, const std::string& directoryPath = "Game/Resources");
-	void LoadFileWithAssimp(const std::string& filename, const std::string& directoryPath = "Game/Resources");
+	void LoadModelFileWithAssimp(const std::string& filename, const std::string& directoryPath = "Game/Resources");
 private:
 #pragma region Vertex
 	/*頂点リソースの作成*/
