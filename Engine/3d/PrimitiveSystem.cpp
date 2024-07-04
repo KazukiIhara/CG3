@@ -87,7 +87,7 @@ void cPrimitiveSystem::CreateVretexBufferView() {
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
-	vertexBufferView_.SizeInBytes = UINT(sizeof(sVertexData) * 6);
+	vertexBufferView_.SizeInBytes = UINT(sizeof(sVertexData));
 	//1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
 }
@@ -97,10 +97,10 @@ void cPrimitiveSystem::MapVertexData() {
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 
 	//左上
-	vertexData_[0].position = { -1.0f,1.0f,0.0f,1.0f };
+	vertexData_[0].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData_[0].texcoord = { 0.0f,0.0f };
 	vertexData_[0].normal = { 0.0f,0.0f,-1.0f };
-	
+
 }
 
 void cPrimitiveSystem::CreateMaterialResource() {
