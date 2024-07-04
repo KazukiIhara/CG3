@@ -79,6 +79,6 @@ private:/*メンバ変数*/
 	/*ビュープロジェクションを受け取る箱*/
 	Matrix4x4* viewProjection_;
 #pragma endregion
-
+	static const uint32_t vertexCount = 1;
 };
 
