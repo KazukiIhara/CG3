@@ -228,18 +228,6 @@ void cPrimitiveSystem::MapVertexData() {
 	std::memcpy(vertexData_, modelData.vertices.data(), sizeof(sVertexData) * modelData.vertices.size());
 }
 
-void cPrimitiveSystem::CreateIndexResource() {
-
-}
-
-void cPrimitiveSystem::CreateIndexBufferView() {
-
-}
-
-void cPrimitiveSystem::MapIndexResource() {
-
-}
-
 void cPrimitiveSystem::CreateMaterialResource() {
 	// マテリアル用のリソースを作る。
 	materialResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Material));

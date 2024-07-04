@@ -44,7 +44,7 @@ void cGameScene::Initialize() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	primitive_ = new cPrimitiveSystem();
-	primitive_->LoadModelFileWithAssimp("plane.obj");
+	primitive_->LoadModelFileWithAssimp("plane.gltf");
 	primitive_->Initialize(&transform_, viewProjectionMatrix_, &uvTransform_);
 }
 

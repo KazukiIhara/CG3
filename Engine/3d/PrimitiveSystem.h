@@ -28,15 +28,6 @@ private:
 	void MapVertexData();
 #pragma endregion
 
-#pragma region Index
-	/*描画用のインデックスリソースを作成*/
-	void CreateIndexResource();
-	/*インデックスバッファビューの作成*/
-	void CreateIndexBufferView();
-	/*インデックスリソースにデータを書き込む*/
-	void MapIndexResource();
-#pragma endregion
-
 #pragma region Material
 	/*マテリアルリソースの作成*/
 	void CreateMaterialResource();
