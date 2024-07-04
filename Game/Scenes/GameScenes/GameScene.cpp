@@ -44,20 +44,13 @@ void cGameScene::Initialize() {
 	directionalLight.direction = { 0.0f,1.0f,0.0f };
 	directionalLight.intensity = 1.0f;
 
-	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLight_.intensity = 0.0f;
-	pointLight_.position = { 0.0f,2.0f,0.0f };
-	pointLight_.radius = 10.0f;
-	pointLight_.decay = 5.0f;
-
-
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };	
 
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	primitive_ = new cPrimitiveSystem();
 	primitive_->LoadModelFileWithAssimp("plane.obj");
-	primitive_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate, &pointLight_);
+	primitive_->Initialize(&transform_, viewProjectionMatrix_, &directionalLight, &uvTransform_, &cameraTransform_.translate);
 }
 
 void cGameScene::Update() {
@@ -106,18 +99,7 @@ void cGameScene::Update() {
 		directionalLight.direction = Normalize(directionalLight.direction);
 		ImGui::TreePop();
 	}
-
-
-	if (ImGui::TreeNodeEx("PointLight", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::ColorEdit3("Color", &pointLight_.color.x);
-		ImGui::DragFloat3("Position", &pointLight_.position.x, 0.01f);
-		ImGui::DragFloat("Intensity", &pointLight_.intensity, 0.01f);
-		ImGui::DragFloat("Radius", &pointLight_.radius, 0.01f);
-		ImGui::DragFloat("Decay", &pointLight_.decay, 0.01f);
-		ImGui::TreePop();
-	}
-
-
+	
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.002f);
 		ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.002f);

@@ -5,23 +5,20 @@
 #include "MathOperator.h"
 
 
-void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition, PointLight* pointLight) {
+void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, DirectionalLight* light, sTransform* uvTransform, Vector3* cameraPosition) {
 	/*NullCheck*/
 
 	assert(transform);
 	assert(uvTransform);
 	assert(viewProjection);
 	assert(light);
-	assert(cameraPosition);
-	assert(pointLight);
-	
+	assert(cameraPosition);	
 
 	transform_ = transform;
 	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
 	directionalLight_ = light;
 	cameraPosition_ = cameraPosition;
-	pointLight_ = pointLight;
 
 #pragma region 頂点データ
 	/*頂点リソースの作成*/
@@ -63,11 +60,6 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 #pragma endregion
 	CreateCameraPositionResource();
 	MapCameraPositionData();
-
-	CreatePointLightResource();
-	MapPointLightData();
-
-
 }
 
 void cPrimitiveSystem::Update() {
@@ -94,11 +86,6 @@ void cPrimitiveSystem::Update() {
 	directionalLightData_->direction = directionalLight_->direction;
 	directionalLightData_->intensity = directionalLight_->intensity;
 
-	pointLightData_->color = pointLight_->color;
-	pointLightData_->intensity = pointLight_->intensity;
-	pointLightData_->position = pointLight_->position;
-	pointLightData_->radius = pointLight_->radius;
-	pointLightData_->decay = pointLight_->decay;
 
 }
 
@@ -120,8 +107,6 @@ void cPrimitiveSystem::Draw(cPipelineStateObject::Blendmode blendMode) {
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource_->GetGPUVirtualAddress());
 	// cameraPosition
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraPositionResource_->GetGPUVirtualAddress());
-	// pointLight
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(5, pointLightResource_->GetGPUVirtualAddress());
 	//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 	cDirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 }
@@ -335,22 +320,6 @@ void cPrimitiveSystem::MapCameraPositionData() {
 	cameraPositionData_->worldPosition.x = cameraPosition_->x;
 	cameraPositionData_->worldPosition.y = cameraPosition_->y;
 	cameraPositionData_->worldPosition.z = cameraPosition_->z;
-}
-
-void cPrimitiveSystem::CreatePointLightResource() {
-	pointLightResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(PointLight));
-}
-
-void cPrimitiveSystem::MapPointLightData() {
-	// データを書き込む
-	pointLightData_ = nullptr;
-	// アドレス取得
-	pointLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
-	pointLightData_->color = pointLight_->color;
-	pointLightData_->intensity = pointLight_->intensity;
-	pointLightData_->position = pointLight_->position;
-	pointLightData_->radius = pointLight_->radius;
-	pointLightData_->decay = pointLight_->decay;
 }
 
 
