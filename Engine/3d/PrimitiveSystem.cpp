@@ -5,14 +5,12 @@
 #include "MathOperator.h"
 
 
-void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection, sTransform* uvTransform) {
+void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjection) {
 	/*NullCheck*/
 	assert(transform);
-	assert(uvTransform);
 	assert(viewProjection);
 
 	transform_ = transform;
-	uvTransform_ = uvTransform;
 	viewProjection_ = viewProjection;
 
 #pragma region 頂点データ
@@ -38,7 +36,7 @@ void cPrimitiveSystem::Update() {
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_->scale, transform_->rotate, transform_->translate);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
 
-	transformationData_->WVP = worldViewProjectionMatrix;
+	WVPData_[0] = worldViewProjectionMatrix;
 }
 
 void cPrimitiveSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
@@ -77,37 +75,18 @@ void cPrimitiveSystem::MapVertexData() {
 	vertexData_[0] = { 0.0f,0.0f,0.0f,1.0f };
 }
 
-void cPrimitiveSystem::CreateMaterialResource() {
-	// マテリアル用のリソースを作る。
-	materialResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Material));
-}
-
-void cPrimitiveSystem::MapMaterialData() {
-	// マテリアルにデータを書き込む
-	materialData_ = nullptr;
-	// 書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	// 色の設定
-	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	// Lightingを有効にする
-	materialData_->enbleLighting = false;
-	// uvTransformMatrix
-	materialData_->uvTransformMatrix = MakeIdentity4x4();
-}
-
 void cPrimitiveSystem::CreateWVPResource() {
 	// WVP用のリソースを作る
-	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(TransformationMatrix));
+	transformationResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Matrix4x4));
 }
 
 void cPrimitiveSystem::MapWVPData() {
 	/*データを書き込む*/
-	transformationData_ = nullptr;
+	WVPData_ = nullptr;
 	/*書き込むためのアドレスを取得*/
-	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
+	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&WVPData_));
 	/*単位行列を書き込んでおく*/
-	transformationData_->WVP = MakeIdentity4x4();
-	transformationData_->World = MakeIdentity4x4();
+	WVPData_[0] = MakeIdentity4x4();
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> cPrimitiveSystem::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

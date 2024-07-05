@@ -11,7 +11,7 @@
 class cPrimitiveSystem {
 public:
 
-	void Initialize(sTransform* transform, Matrix4x4* viewProjection, sTransform* uvTransform);
+	void Initialize(sTransform* transform, Matrix4x4* viewProjection);
 	void Update();
 	void Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode);
 
@@ -23,13 +23,6 @@ private:
 	void CreateVretexBufferView();
 	/*頂点データの書き込み*/
 	void MapVertexData();
-#pragma endregion
-
-#pragma region Material
-	/*マテリアルリソースの作成*/
-	void CreateMaterialResource();
-	/*マテリアルデータの書き込み*/
-	void MapMaterialData();
 #pragma endregion
 
 #pragma region WVP
@@ -52,28 +45,10 @@ private:/*メンバ変数*/
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 #pragma endregion
 
-#pragma region インデックス
-	/*インデックスリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
-	/*インデックスバッファビュー*/
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	/*インデックスデータ*/
-	uint32_t* indexData_;
-#pragma endregion
-
-#pragma region マテリアル
-	/*マテリアルリソース*/
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
-	/*マテリアルデータ*/
-	Material* materialData_ = nullptr;
-	/*uvTransformを受け取る箱*/
-	sTransform* uvTransform_;
-#pragma endregion
-
 #pragma region 変換
 	/*WVP用のリソース*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
-	TransformationMatrix* transformationData_;
+	Matrix4x4* WVPData_;
 	/*トランスフォームデータを受け取る箱*/
 	sTransform* transform_;
 	/*ビュープロジェクションを受け取る箱*/

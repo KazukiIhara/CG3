@@ -61,8 +61,6 @@ private:
 	PointLight pointLight_{};
 
 	sTransform transform_;
-	sTransform uvTransform_;
-
 
 	// モデル
 	cPrimitiveSystem* primitive_{};

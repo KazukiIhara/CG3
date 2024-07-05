@@ -41,10 +41,8 @@ void cGameScene::Initialize() {
 
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
 	primitive_ = new cPrimitiveSystem();
-	primitive_->Initialize(&transform_, viewProjectionMatrix_, &uvTransform_);
+	primitive_->Initialize(&transform_, viewProjectionMatrix_);
 	textureHandle_ = cTextureManager::Load("Game/Resources/uvChecker.png");
 }
 
