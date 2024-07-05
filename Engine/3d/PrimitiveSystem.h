@@ -47,7 +47,7 @@ private:/*メンバ変数*/
 	/*頂点リソース*/
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	/*頂点データ*/
-	sVertexData* vertexData_;
+	Vector4* vertexData_;
 	/*VBV*/
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 #pragma endregion

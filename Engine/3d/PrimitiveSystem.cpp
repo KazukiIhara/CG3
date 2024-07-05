@@ -67,16 +67,16 @@ void cPrimitiveSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendm
 }
 
 void cPrimitiveSystem::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(sVertexData) * 6);
+	vertexResource_ = CreateBufferResource(cDirectXCommon::GetDevice(), sizeof(Vector4));
 }
 
 void cPrimitiveSystem::CreateVretexBufferView() {
 	//リソースの先頭アドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//使用するリソースのサイズ
-	vertexBufferView_.SizeInBytes = UINT(sizeof(sVertexData));
+	vertexBufferView_.SizeInBytes = UINT(sizeof(Vector4));
 	//1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(sVertexData);
+	vertexBufferView_.StrideInBytes = sizeof(Vector4);
 }
 
 void cPrimitiveSystem::MapVertexData() {
@@ -84,10 +84,7 @@ void cPrimitiveSystem::MapVertexData() {
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 
 	//左上
-	vertexData_[0].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData_[0].texcoord = { 0.0f,0.0f };
-	vertexData_[0].normal = { 0.0f,0.0f,-1.0f };
-
+	vertexData_[0] = { 0.0f,0.0f,0.0f,1.0f };
 }
 
 void cPrimitiveSystem::CreateMaterialResource() {
