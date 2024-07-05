@@ -23,21 +23,21 @@ void main(
     element.position = input[0].position + float32_t4(-1.0f, -1.0f, 0.0f, 0.0f);
     element.normal = float32_t3(0.0f, 0.0f, 1.0f);
     element.texcoord = float32_t2(0.0f, 1.0f);
-    element.position = mul(gTransformationMatrix.WVP, element.position);
+    element.position = mul(element.position, gTransformationMatrix.WVP);
     output.Append(element);
     element.position = input[0].position + float32_t4(-1.0f, +1.0f, 0.0f, 0.0f);
     element.normal = float32_t3(0.0f, 0.0f, 1.0f);
     element.texcoord = float32_t2(0.0f, 0.0f);
-    element.position = mul(gTransformationMatrix.WVP, element.position);
+    element.position = mul(element.position, gTransformationMatrix.WVP);
     output.Append(element);
     element.position = input[0].position + float32_t4(+1.0f, -1.0f, 0.0f, 0.0f);
     element.normal = float32_t3(0.0f, 0.0f, 1.0f);
     element.texcoord = float32_t2(1.0f, 1.0f);
-    element.position = mul(gTransformationMatrix.WVP, element.position);
+    element.position = mul(element.position, gTransformationMatrix.WVP);
     output.Append(element);
     element.position = input[0].position + float32_t4(+1.0f, +1.0f, 0.0f, 0.0f);
     element.normal = float32_t3(0.0f, 0.0f, 1.0f);
     element.texcoord = float32_t2(1.0f, 0.0f);
-    element.position = mul(gTransformationMatrix.WVP, element.position);
+    element.position = mul(element.position, gTransformationMatrix.WVP);
     output.Append(element);
 }

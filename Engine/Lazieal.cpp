@@ -325,3 +325,12 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	};
 	return result;
 }
+
+Vector3 ExtractionWorldPos(const Matrix4x4& m) {
+	Vector3 worldPos{};
+	/*ワールド座標の平行移動成分を取得*/
+	worldPos.x = m.m[3][0];
+	worldPos.y = m.m[3][1];
+	worldPos.z = m.m[3][2];
+	return worldPos;
+}

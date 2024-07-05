@@ -44,21 +44,8 @@ void cPrimitiveSystem::Update() {
 	/*WVPマトリックスを作る*/
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_->scale, transform_->rotate, transform_->translate);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, *viewProjection_);
-	Matrix4x4 worldInverseTransposeMatrix = MakeInverseTransposeMatrix(worldMatrix);
 
 	transformationData_->WVP = worldViewProjectionMatrix;
-	transformationData_->World = worldMatrix;
-	transformationData_->WorldInverseTransepose = worldInverseTransposeMatrix;
-
-	// 色を書き込む
-	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	materialData_->shininess = 40.0f;
-
-	/*uvTranform用のMatrixを作る*/
-	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_->scale);
-	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_->rotate.z));
-	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_->translate));
-	materialData_->uvTransformMatrix = uvTransformMatrix;
 }
 
 void cPrimitiveSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendmode blendMode) {
