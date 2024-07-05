@@ -24,13 +24,6 @@ void cPrimitiveSystem::Initialize(sTransform* transform, Matrix4x4* viewProjecti
 	MapVertexData();
 #pragma endregion
 
-#pragma region マテリアルデータ
-	/*マテリアル用のリソース作成*/
-	CreateMaterialResource();
-	/*マテリアルにデータを書き込む*/
-	MapMaterialData();
-#pragma endregion
-
 #pragma region 変換データ
 	/*wvp用のリソース作成*/
 	CreateWVPResource();
@@ -56,8 +49,6 @@ void cPrimitiveSystem::Draw(uint32_t textureHandle, cPipelineStateObject::Blendm
 	cDirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	cDirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	/*マテリアルCBufferの場所を設定*/
-	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	/*wvp用のCBufferの場所を設定*/
 	cDirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 	/*SRVのDescriptorTableの先頭を設定*/
@@ -83,7 +74,6 @@ void cPrimitiveSystem::MapVertexData() {
 	vertexData_ = nullptr;
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 
-	//左上
 	vertexData_[0] = { 0.0f,0.0f,0.0f,1.0f };
 }
 
